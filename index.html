@@ -426,6 +426,8 @@
     padding: 3px 12px; font-size: .82rem; font-weight: bold;
   }
 </style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -578,7 +580,7 @@
   </div>
 </div>
 
-<script type="module">
+<script>
 // ======= بيانات المروّجين =======
 const promoters = [
   { market: "Tamimi - 194 - Al Rass - Qassim", name: "Shaoul Hamid", phone: "+966507689767", source: "Mayar" },
@@ -1470,43 +1472,43 @@ const TODAY = new Date().toDateString();
 // ============================================================
 //  Firebase — مزامنة فورية بين كل الأجهزة
 // ============================================================
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyBG8GAcRbo9elPUpcFkh6feOyJROnojvFM",
   authDomain: "mayar-orders.firebaseapp.com",
   projectId: "mayar-orders",
   storageBucket: "mayar-orders.firebasestorage.app",
   messagingSenderId: "617339826961",
-  appId: "1:617339826961:web:47321a1fba921f6bbad2b0",
-  measurementId: "G-8XR47N8GZD"
+  appId: "1:617339826961:web:47321a1fba921f6bbad2b0"
 };
 
-const fbApp = initializeApp(firebaseConfig);
-const db = getFirestore(fbApp);
-const ordersRef = doc(db, "orders", "today");
+let db = null;
+let ordersRef = null;
 
-// رفع الطلبات لـ Firebase
-async function syncToFirebase(orders) {
+function initFirebase() {
   try {
-    await setDoc(ordersRef, { date: TODAY, orders, updatedAt: Date.now() });
-  } catch(e) { console.warn("Firebase sync error:", e); }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    ordersRef = db.collection("orders").doc("today");
+    // مراقبة التغييرات الفورية
+    ordersRef.onSnapshot((snap) => {
+      if (!snap.exists) return;
+      const data = snap.data();
+      if (data && data.date === TODAY && data.orders) {
+        localStorage.setItem(ORDERS_KEY, JSON.stringify({ date: TODAY, orders: data.orders }));
+        updateCount(data.orders);
+        refreshOrdersUI();
+        showPromoterOrders();
+        showDriverOrders();
+      }
+    });
+  } catch(e) { console.warn("Firebase init error:", e); }
 }
 
-// مراقبة التغييرات الفورية من Firebase
-onSnapshot(ordersRef, (snap) => {
-  if (!snap.exists()) return;
-  const data = snap.data();
-  if (data.date === TODAY && data.orders) {
-    // حفّظ في localStorage وحدّث الواجهة
-    localStorage.setItem(ORDERS_KEY, JSON.stringify({ date: TODAY, orders: data.orders }));
-    updateCount(data.orders);
-    refreshOrdersUI();
-    showPromoterOrders();
-    showDriverOrders();
-  }
-});
+async function syncToFirebase(orders) {
+  try {
+    if (ordersRef) await ordersRef.set({ date: TODAY, orders, updatedAt: Date.now() });
+  } catch(e) { console.warn("Firebase sync error:", e); }
+}
 // تنسيق التاريخ العربي
 function formatDateAr(dateStr) {
   const d = new Date(dateStr);
@@ -2107,6 +2109,7 @@ loadOrders();
 // تهيئة
 initOrders();
 initAbsence();
+initFirebase();
 </script>
 </body>
 </html>
