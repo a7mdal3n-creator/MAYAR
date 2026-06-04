@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mayar — بحث عن السوق</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f7f5ff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 48px;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    width: 100%;
+    background: linear-gradient(135deg, #2d1b6e 0%, #4c2d9e 60%, #6d3fc0 100%);
+    padding: 28px 20px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 20px rgba(76,45,158,.35);
+    margin-bottom: 32px;
+  }
+  .logo-wrap {
+    background: #fff;
+    border-radius: 16px;
+    padding: 10px 18px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.15);
+  }
+  .logo-wrap img {
+    height: 64px;
+    display: block;
+  }
+  .logo-text {
+    text-align: center;
+    color: #fff;
+  }
+  .logo-text .ar {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #d4b8ff;
+    letter-spacing: 1px;
+  }
+  .logo-text .en {
+    font-size: .85rem;
+    color: rgba(255,255,255,.65);
+    margin-top: 2px;
+  }
+  .header-title {
+    color: #fff;
+    font-size: 1rem;
+    opacity: .85;
+    margin-top: 4px;
+  }
+  .gold-line {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, #C9A327, #f0d060);
+    border-radius: 2px;
+    margin-top: 2px;
+  }
+  /* ===== LANGUAGE SWITCHER ===== */
+  .lang-switcher {
+    display: flex; gap: 6px; margin-top: 6px;
+  }
+  .lang-btn {
+    padding: 5px 14px; border-radius: 20px; border: 2px solid rgba(255,255,255,.3);
+    background: transparent; color: rgba(255,255,255,.7); font-size: .8rem;
+    cursor: pointer; font-weight: 600; transition: all .2s; letter-spacing: .5px;
+  }
+  .lang-btn.active {
+    background: #fff; color: #4c2d9e; border-color: #fff;
+  }
+  .lang-btn:hover:not(.active) { background: rgba(255,255,255,.15); color: #fff; }
+
+  /* ===== SEARCH ===== */
+  .search-wrap { width: 100%; max-width: 560px; padding: 0 16px; }
+  .search-box {
+    position: relative;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(76,45,158,.15);
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: border-color .2s;
+  }
+  .search-box:focus-within { border-color: #8B5CF6; }
+  .search-box input {
+    width: 100%; padding: 16px 52px 16px 18px;
+    font-size: 1rem; border: none; outline: none;
+    background: transparent; direction: ltr;
+    color: #222;
+  }
+  .search-box .ico {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem; color: #8B5CF6; pointer-events: none;
+  }
+  .search-box .clear-btn {
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%);
+    background: #eee; border: none; border-radius: 50%;
+    width: 22px; height: 22px; font-size: .75rem;
+    cursor: pointer; color: #666; display: none;
+    align-items: center; justify-content: center;
+  }
+  .search-box input:not(:placeholder-shown) ~ .clear-btn { display: flex; }
+
+  /* ===== RESULTS ===== */
+  #results { width: 100%; max-width: 560px; padding: 0 16px; margin-top: 20px; }
+
+  .count-bar {
+    font-size: .82rem; color: #8B5CF6;
+    margin-bottom: 14px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .count-bar::before {
+    content: ''; width: 4px; height: 16px;
+    background: #C9A327; border-radius: 2px; display: inline-block;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 3px 16px rgba(76,45,158,.10);
+    border-top: 4px solid #8B5CF6;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, #8B5CF6, #C9A327, #22A045);
+  }
+  .market-name {
+    font-size: 1rem; font-weight: bold; color: #2d1b6e;
+    margin-bottom: 16px; direction: ltr; text-align: left;
+    padding-right: 8px;
+    border-right: 3px solid #C9A327;
+  }
+  .section { margin-bottom: 12px; }
+  .section:last-child { margin-bottom: 0; }
+  .section-title {
+    font-size: .72rem; color: #8B5CF6;
+    margin-bottom: 7px; font-weight: bold;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: .9rem; color: #333; flex-wrap: wrap;
+  }
+  .tag {
+    background: #f0ebff; color: #6d3fc0;
+    border-radius: 8px; padding: 4px 10px;
+    font-size: .8rem; font-weight: 600; white-space: nowrap;
+  }
+  .tag.gold { background: #fdf6e3; color: #a07800; }
+  .tag.green { background: #e6f9ee; color: #166534; }
+  .phone { direction: ltr; font-family: monospace; font-size: .9rem; color: #444; }
+  .wa-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: #25d366; color: #fff; border-radius: 10px;
+    padding: 5px 12px; font-size: .78rem; text-decoration: none;
+    font-weight: 600; transition: background .15s;
+  }
+  .wa-btn:hover { background: #1ab755; }
+  .divider { border: none; border-top: 1px dashed #e8e0ff; margin: 12px 0; }
+
+  .no-result {
+    text-align: center; color: #999; margin-top: 50px;
+    font-size: .95rem;
+  }
+  .no-result span { font-size: 2rem; display: block; margin-bottom: 8px; }
+  .hint {
+    text-align: center; color: #bbb; font-size: .88rem; margin-top: 16px;
+  }
+  .hint span { font-size: 1.6rem; display: block; margin-bottom: 8px; }
+
+  /* ===== ORDERS SECTION ===== */
+  .orders-wrap {
+    width: 100%; max-width: 560px; padding: 0 16px; margin-top: 32px;
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .section-header h2 {
+    font-size: 1rem; font-weight: bold; color: #2d1b6e;
+  }
+  .section-badge {
+    background: linear-gradient(135deg, #C9A327, #f0d060);
+    color: #fff; border-radius: 20px;
+    padding: 3px 10px; font-size: .75rem; font-weight: bold;
+  }
+  .sep-line {
+    width: 100%; height: 2px; margin-bottom: 20px;
+    background: linear-gradient(90deg, #8B5CF6, #C9A327, transparent);
+    border-radius: 2px;
+  }
+
+  /* تبويبات */
+  .tabs {
+    display: flex; gap: 8px; margin-bottom: 20px;
+  }
+  .tab-btn {
+    flex: 1; padding: 11px 8px; border: 2px solid #e0d8ff;
+    border-radius: 12px; background: #fff; cursor: pointer;
+    font-size: .88rem; color: #888; font-weight: 600;
+    transition: all .2s;
+  }
+  .tab-btn.active {
+    background: linear-gradient(135deg, #4c2d9e, #8B5CF6);
+    color: #fff; border-color: transparent;
+    box-shadow: 0 4px 12px rgba(76,45,158,.3);
+  }
+
+  /* لوحة الإدارة */
+  .admin-panel, .promoter-panel { display: none; }
+  .admin-panel.show, .promoter-panel.show { display: block; }
+
+  .admin-lock {
+    background: #fff; border-radius: 16px; padding: 20px;
+    box-shadow: 0 3px 16px rgba(76,45,158,.10);
+    margin-bottom: 16px;
+  }
+  .admin-lock input, .admin-lock select {
+    width: 100%; padding: 12px 14px; border: 2px solid #e0d8ff;
+    border-radius: 10px; font-size: .9rem; outline: none;
+    margin-bottom: 10px; background: #faf8ff; direction: ltr;
+    transition: border-color .2s;
+  }
+  .admin-lock input:focus, .admin-lock select:focus { border-color: #8B5CF6; }
+  .admin-lock input[dir="rtl"] { direction: rtl; }
+  .input-label {
+    font-size: .78rem; color: #8B5CF6; font-weight: 600;
+    margin-bottom: 5px; display: block;
+  }
+  .btn-primary {
+    width: 100%; padding: 13px; background: linear-gradient(135deg, #4c2d9e, #8B5CF6);
+    color: #fff; border: none; border-radius: 12px; font-size: .95rem;
+    font-weight: bold; cursor: pointer; transition: opacity .2s;
+  }
+  .btn-primary:hover { opacity: .9; }
+  .btn-danger {
+    padding: 6px 12px; background: #fff0f0; color: #c00;
+    border: 1px solid #fcc; border-radius: 8px;
+    font-size: .78rem; cursor: pointer;
+  }
+
+  /* قائمة الطلبيات اليومية */
+  .orders-list {
+    background: #fff; border-radius: 16px; padding: 16px 18px;
+    box-shadow: 0 3px 16px rgba(76,45,158,.08);
+    margin-bottom: 14px;
+  }
+  .orders-list-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  .orders-list-title { font-size: .88rem; font-weight: bold; color: #2d1b6e; }
+  .order-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 12px; background: #faf8ff; border-radius: 10px;
+    margin-bottom: 8px; gap: 8px;
+  }
+  .order-item:last-child { margin-bottom: 0; }
+  .order-market { font-size: .85rem; color: #333; direction: ltr; flex: 1; }
+  .order-driver { font-size: .78rem; color: #8B5CF6; font-family: monospace; }
+  .today-badge {
+    background: #e6f9ee; color: #166534;
+    border-radius: 6px; padding: 2px 8px; font-size: .72rem; font-weight: bold;
+  }
+
+  /* لوحة المنشط */
+  .promoter-input-box {
+    background: #fff; border-radius: 16px; padding: 20px;
+    box-shadow: 0 3px 16px rgba(76,45,158,.10); margin-bottom: 16px;
+  }
+  .promoter-select {
+    width: 100%; padding: 13px 14px; border: 2px solid #e0d8ff;
+    border-radius: 12px; font-size: .95rem; outline: none;
+    background: #faf8ff; cursor: pointer; color: #333;
+    transition: border-color .2s; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B5CF6' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: left 14px center;
+    padding-left: 36px;
+  }
+  .promoter-select:focus { border-color: #8B5CF6; }
+
+  .order-card {
+    background: #fff; border-radius: 16px; padding: 18px 20px;
+    box-shadow: 0 3px 16px rgba(76,45,158,.10); margin-bottom: 12px;
+    border-right: 4px solid #22A045;
+  }
+  .order-card-market {
+    font-size: .95rem; font-weight: bold; color: #2d1b6e;
+    direction: ltr; margin-bottom: 10px;
+    padding-right: 8px; border-right: 3px solid #C9A327;
+  }
+  .driver-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .driver-tag {
+    background: #f0ebff; color: #6d3fc0;
+    border-radius: 8px; padding: 4px 10px; font-size: .8rem; font-weight: 600;
+  }
+  .empty-orders {
+    text-align: center; color: #bbb; padding: 30px 0; font-size: .9rem;
+  }
+  .empty-orders span { font-size: 1.8rem; display: block; margin-bottom: 8px; }
+
+  /* ===== ARCHIVE ===== */
+  .archive-day {
+    background: #fff; border-radius: 16px; padding: 18px 20px;
+    box-shadow: 0 3px 16px rgba(76,45,158,.08); margin-bottom: 14px;
+  }
+  .archive-day-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; cursor: pointer;
+  }
+  .archive-date {
+    font-size: .9rem; font-weight: bold; color: #4c2d9e;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .archive-count {
+    background: #f0ebff; color: #6d3fc0;
+    border-radius: 20px; padding: 2px 10px; font-size: .75rem; font-weight: bold;
+  }
+  .archive-toggle { color: #aaa; font-size: .8rem; }
+  .archive-body { display: none; }
+  .archive-body.open { display: block; }
+  .archive-item {
+    padding: 10px 12px; background: #faf8ff; border-radius: 10px;
+    margin-bottom: 8px; border-right: 3px solid #C9A327;
+  }
+  .archive-item:last-child { margin-bottom: 0; }
+  .archive-market { font-size: .85rem; font-weight: 600; color: #2d1b6e; direction: ltr; margin-bottom: 5px; }
+  .archive-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .archive-promoter { background: #e6f9ee; color: #166534; border-radius: 6px; padding: 2px 8px; font-size: .75rem; font-weight: 600; }
+  .archive-driver { background: #f0ebff; color: #6d3fc0; border-radius: 6px; padding: 2px 8px; font-size: .75rem; font-family: monospace; }
+
+  /* ===== ABSENCE & DISTRIBUTION ===== */
+  .absence-box {
+    background: #fff5f5; border: 2px solid #fca5a5;
+    border-radius: 16px; padding: 18px 20px; margin-bottom: 14px;
+  }
+  .dist-card {
+    background: #fff; border-radius: 14px; padding: 16px 18px;
+    margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.07);
+    border-right: 4px solid #f59e0b;
+  }
+  .dist-market { font-size: .88rem; font-weight: bold; color: #2d1b6e; direction: ltr; margin-bottom: 10px; }
+  .dist-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .dist-arrow { color: #f59e0b; font-size: 1.1rem; }
+  .dist-select {
+    flex: 1; padding: 7px 10px; border: 2px solid #e0d8ff;
+    border-radius: 8px; font-size: .82rem; outline: none;
+    background: #faf8ff; min-width: 160px;
+  }
+  .dist-select:focus { border-color: #8B5CF6; }
+  .region-badge {
+    border-radius: 6px; padding: 2px 8px; font-size: .72rem; font-weight: bold;
+  }
+  .region-وسط  { background: #e0f2fe; color: #0369a1; }
+  .region-شمال { background: #f0fdf4; color: #15803d; }
+  .region-شرق  { background: #fef9c3; color: #854d0e; }
+  .region-غرب  { background: #fdf4ff; color: #7e22ce; }
+  .region-جنوب { background: #fff1f2; color: #be123c; }
+  .region-الخرج{ background: #f1f5f9; color: #475569; }
+  .btn-confirm {
+    width: 100%; padding: 13px; background: linear-gradient(135deg, #15803d, #22c55e);
+    color: #fff; border: none; border-radius: 12px; font-size: .95rem;
+    font-weight: bold; cursor: pointer; margin-top: 6px;
+  }
+  .btn-confirm:hover { opacity: .9; }
+  .absent-badge {
+    background: #fee2e2; color: #b91c1c; border-radius: 6px;
+    padding: 2px 8px; font-size: .72rem; font-weight: bold;
+  }
+
+  /* ===== DRIVER CARD ===== */
+  .driver-order-card {
+    background: #fff; border-radius: 16px; padding: 18px 20px;
+    margin-bottom: 12px; box-shadow: 0 3px 16px rgba(76,45,158,.10);
+    border-right: 4px solid #f59e0b;
+    position: relative; overflow: hidden;
+  }
+  .driver-order-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, #f59e0b, #C9A327, #22A045);
+  }
+  .driver-order-num {
+    position: absolute; top: 14px; left: 16px;
+    background: #fef3c7; color: #92400e;
+    border-radius: 50%; width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .78rem; font-weight: bold;
+  }
+  .driver-market-name {
+    font-size: .95rem; font-weight: bold; color: #2d1b6e;
+    direction: ltr; margin-bottom: 12px;
+    padding-right: 8px; border-right: 3px solid #C9A327;
+  }
+  .driver-promoter-row {
+    background: #f7f5ff; border-radius: 10px; padding: 10px 12px;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .driver-summary-bar {
+    background: linear-gradient(135deg, #f59e0b22, #C9A32722);
+    border: 1px solid #C9A32744; border-radius: 12px;
+    padding: 12px 16px; margin-bottom: 16px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .driver-summary-text { font-size: .88rem; color: #92400e; font-weight: bold; }
+  .driver-summary-count {
+    background: #f59e0b; color: #fff; border-radius: 20px;
+    padding: 3px 12px; font-size: .82rem; font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-wrap">
+    <img src="logo.png" alt="Mayar" onerror="this.parentElement.innerHTML='<div style=\'font-size:1.5rem;font-weight:bold;color:#4c2d9e;font-family:serif\'>🌾 <span style=\'color:#8B5CF6\'>ميار</span> <span style=\'color:#222\'>Mayar</span></div>'">
+  </div>
+  <p class="header-title" data-i18n="headerTitle">نظام البحث عن مروّجي ومناديب المبيعات</p>
+  <div class="gold-line"></div>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('ar')">العربية</button>
+    <button class="lang-btn" onclick="setLang('en')">English</button>
+    <button class="lang-btn" onclick="setLang('ur')">اردو</button>
+  </div>
+</div>
+
+<div class="search-wrap">
+  <div class="search-box">
+    <input type="text" id="searchInput" data-i18n-placeholder="searchPlaceholder" placeholder="ابحث باسم السوق... مثال: Panda 100" oninput="search()">
+    <span class="ico">🔍</span>
+    <button class="clear-btn" onclick="clearSearch()">✕</button>
+  </div>
+</div>
+
+<div id="results">
+  <div class="hint"><span>🔍</span>ابدأ بكتابة اسم السوق للبحث</div>
+</div>
+
+<!-- ===== قسم الطلبيات ===== -->
+<div class="orders-wrap">
+  <div class="sep-line"></div>
+  <div class="section-header">
+    <h2 data-i18n="ordersTitle">📦 طلبيات اليوم</h2>
+    <span class="section-badge" id="ordersCount">0 طلب</span>
+  </div>
+
+  <!-- تبويبات -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('promoter')" data-i18n="tabPromoter">👤 أنا منشط</button>
+    <button class="tab-btn" onclick="switchTab('driver')" data-i18n="tabDriver">🚗 أنا سائق</button>
+    <button class="tab-btn" onclick="switchTab('admin')" data-i18n="tabAdmin">⚙️ إدارة الطلبيات</button>
+    <button class="tab-btn" onclick="switchTab('history')" data-i18n="tabHistory">🗂 الأرشيف</button>
+  </div>
+
+  <!-- لوحة المنشط -->
+  <div class="promoter-panel show" id="promoterPanel">
+    <div class="promoter-input-box">
+      <label class="input-label">🔍 ابحث باسمك</label>
+      <div style="position:relative">
+        <input type="text" id="promoterSearchInput" placeholder="اكتب اسمك..." dir="rtl"
+          style="width:100%;padding:12px 14px;border:2px solid #e0d8ff;border-radius:10px;font-size:.95rem;outline:none;background:#faf8ff;transition:border-color .2s"
+          oninput="filterPromoterList()" onfocus="document.getElementById('promoterDropdown').style.display='block'">
+        <div id="promoterDropdown" style="display:none;position:absolute;top:100%;right:0;left:0;background:#fff;border:2px solid #e0d8ff;border-radius:10px;max-height:200px;overflow-y:auto;z-index:100;box-shadow:0 4px 16px rgba(76,45,158,.15);margin-top:4px"></div>
+      </div>
+    </div>
+    <div id="promoterOrders">
+      <div class="empty-orders"><span>📋</span>اكتب اسمك لتظهر طلبياتك</div>
+    </div>
+  </div>
+
+  <!-- لوحة السائق -->
+  <div class="admin-panel" id="driverPanel">
+    <div class="promoter-input-box">
+      <label class="input-label" data-i18n="driverLabel">🔍 أدخل رقم جوالك</label>
+      <input type="tel" id="driverSearchInput" placeholder="05XXXXXXXX"
+        dir="ltr"
+        style="width:100%;padding:13px 14px;border:2px solid #e0d8ff;border-radius:12px;font-size:1rem;outline:none;background:#faf8ff;letter-spacing:1px;transition:border-color .2s"
+        oninput="showDriverOrders()">
+    </div>
+    <div id="driverOrders">
+      <div class="empty-orders"><span>🚗</span><span data-i18n="driverHint">أدخل رقمك لتظهر طلباتك</span></div>
+    </div>
+  </div>
+
+  <!-- لوحة الأرشيف -->
+  <div class="admin-panel" id="historyPanel">
+    <div id="historyLockScreen" class="admin-lock">
+      <label class="input-label">كلمة المرور للدخول للأرشيف</label>
+      <input type="password" id="historyPass" placeholder="أدخل كلمة المرور" dir="rtl">
+      <button class="btn-primary" onclick="unlockHistory()">دخول ⚡</button>
+      <p id="historyPassError" style="color:#c00;font-size:.8rem;margin-top:8px;display:none">كلمة المرور خاطئة</p>
+    </div>
+    <div id="historyContent" style="display:none">
+      <!-- فلاتر البحث -->
+      <div class="admin-lock">
+        <label class="input-label">🔍 بحث في الأرشيف</label>
+        <input type="text" id="historySearchInput" placeholder="اسم المروّج أو اسم السوق..." dir="rtl" oninput="searchHistory()" style="margin-bottom:10px">
+        <label class="input-label">📅 بحث بالتاريخ</label>
+        <input type="date" id="historyDateInput" oninput="searchHistory()" style="margin-bottom:10px; direction:ltr">
+        <button class="btn-primary" style="background:linear-gradient(135deg,#c0392b,#e74c3c)" onclick="if(confirm('حذف كامل الأرشيف نهائياً؟')) { localStorage.removeItem(ARCHIVE_KEY); renderHistory([]); }">🗑 حذف الأرشيف كاملاً</button>
+      </div>
+      <div id="historyResults"></div>
+    </div>
+  </div>
+
+  <!-- لوحة الإدارة -->
+  <div class="admin-panel" id="adminPanel">
+    <!-- كلمة المرور -->
+    <div id="adminLockScreen" class="admin-lock">
+      <label class="input-label">كلمة المرور</label>
+      <input type="password" id="adminPass" placeholder="أدخل كلمة المرور" dir="rtl">
+      <button class="btn-primary" onclick="unlockAdmin()">دخول ⚡</button>
+      <p id="passError" style="color:#c00;font-size:.8rem;margin-top:8px;display:none">كلمة المرور خاطئة</p>
+    </div>
+
+    <!-- واجهة الإدارة بعد الدخول -->
+    <div id="adminContent" style="display:none">
+      <!-- استيراد بكود -->
+      <div class="admin-lock" style="border:2px solid #C9A327; background:#fffdf0;">
+        <label class="input-label" style="color:#a07800;">⚡ استيراد سريع بكود</label>
+        <p style="font-size:.78rem;color:#999;margin-bottom:10px;">أرسل صورة الورقة للمساعد وسيعطيك كود، الصقه هنا</p>
+        <textarea id="importCode" rows="3" placeholder='الصق الكود هنا...' style="width:100%;padding:10px;border:2px solid #e0d8ff;border-radius:10px;font-size:.85rem;font-family:monospace;outline:none;resize:vertical;margin-bottom:10px;direction:ltr"></textarea>
+        <button class="btn-primary" style="background:linear-gradient(135deg,#a07800,#C9A327);" onclick="importFromCode()">⚡ استيراد الطلبيات</button>
+        <p id="importMsg" style="font-size:.8rem;margin-top:8px;display:none"></p>
+      </div>
+
+      <!-- إضافة طلب يدوي -->
+      <div class="admin-lock">
+        <label class="input-label">➕ إضافة يدوية</label>
+        <select id="orderMarketSelect" style="margin-bottom:10px">
+          <option value="">-- اختر السوق --</option>
+        </select>
+        <label class="input-label">رقم السائق</label>
+        <input type="text" id="driverPhone" placeholder="+966 5XX XXX XXX">
+        <button class="btn-primary" onclick="addOrder()">إضافة طلب</button>
+      </div>
+
+      <!-- غياب المروّجين -->
+      <div class="absence-box">
+        <label class="input-label" style="color:#b91c1c;">🚨 توزيع عند الغياب</label>
+        <p style="font-size:.78rem;color:#999;margin-bottom:10px">اختر المروّج الغائب وسيقترح النظام أفضل توزيع لأسواقه</p>
+        <select id="absentPromoterSelect" style="width:100%;padding:11px 12px;border:2px solid #fca5a5;border-radius:10px;font-size:.9rem;outline:none;background:#fff;margin-bottom:10px">
+          <option value="">-- اختر المروّج الغائب --</option>
+        </select>
+        <button class="btn-primary" style="background:linear-gradient(135deg,#b91c1c,#ef4444)" onclick="showDistribution()">📋 عرض التوزيع المقترح</button>
+      </div>
+      <div id="distributionResult"></div>
+
+      <!-- قائمة الطلبيات الحالية -->
+      <div class="orders-list">
+        <div class="orders-list-header">
+          <span class="orders-list-title">📋 الطلبيات المدخلة اليوم</span>
+          <button class="btn-danger" onclick="clearAllOrders()">🗑 مسح الكل</button>
+        </div>
+        <div id="adminOrdersList">
+          <div class="empty-orders"><span>📭</span>لا توجد طلبيات بعد</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// ======= بيانات المروّجين =======
+const promoters = [
+  { market: "Tamimi - 194 - Al Rass - Qassim", name: "Shaoul Hamid", phone: "+966507689767", source: "Mayar" },
+  { market: "Panda - 316 - Al Rass - Dakhna Rd. - Qassim", name: "Shaoul Hamid", phone: "+966507689767", source: "Mayar" },
+  { market: "Othaim - 47 - Al Rass - Qassim", name: "Shaoul Hamid", phone: "+966507689767", source: "Mayar" },
+  { market: "Panda - 307 - Al Badaya - Qassim", name: "Shaoul Hamid", phone: "+966507689767", source: "Mayar" },
+  { market: "Othaim - 71 - Al Badaya - Qassim", name: "Shaoul Hamid", phone: "+966507689767", source: "Mayar" },
+  { market: "Panda - 37 - Al Bukharyah - Qassim", name: "Shaoul Hamid", phone: "+966507689767", source: "Mayar" },
+  { market: "Othaim - 51 - Al Bukharyah - Qassim", name: "Shaoul Hamid", phone: "+966507689767", source: "Mayar" },
+  { market: "Othaim - 175 - Al Khubrah - Qassim", name: "Shaoul Hamid", phone: "+966507689767", source: "Mayar" },
+  { market: "Othaim - 54 - Rayad Al Khobrah - Qassim", name: "Shaoul Hamid", phone: "+966507689767", source: "Mayar" },
+  { market: "Panda - 10006 - Al Oreja", name: "Abdullah Al Dersy", phone: "+966532687986", source: "Anabil" },
+  { market: "Farm Stores - 78 - Aghoroub", name: "Abdullah Al Dersy", phone: "+966532687986", source: "Anabil" },
+  { market: "Farm Stores - 60 - Toeq Riyadh", name: "Abdullah Al Dersy", phone: "+966532687986", source: "Anabil" },
+  { market: "Othaim - 310 - Aghoroub", name: "Abdullah Al Dersy", phone: "+966532687986", source: "Anabil" },
+  { market: "Othaim - 149 - Toeq", name: "Abdullah Al Dersy", phone: "+966532687986", source: "Anabil" },
+  { market: "Othaim - 365 - Riyadh", name: "Abdullah Al Dersy", phone: "+966532687986", source: "Anabil" },
+  { market: "A-Market - Tuwaiq", name: "Abdullah Al Dersy", phone: "+966532687986", source: "Anabil" },
+  { market: "A-Market - Zuhrat Laban", name: "Abdullah Al Dersy", phone: "+966532687986", source: "Anabil" },
+  { market: "Lulu Saudi HM Onayza", name: "Md Shohal Mil", phone: "+966537150544", source: "Anabil" },
+  { market: "Tamimi - 190 - Unayzah - Qassim", name: "Md Shohal Mil", phone: "+966537150544", source: "Anabil" },
+  { market: "Othaim - 46 - Badaeh Rd. - Qassim", name: "Md Shohal Mil", phone: "+966537150544", source: "Anabil" },
+  { market: "Othaim - 169 - Unayzah Mall - Qassim", name: "Md Shohal Mil", phone: "+966537150544", source: "Anabil" },
+  { market: "Danube - 159 - Unayzah - Qassim", name: "Md Shohal Mil", phone: "+966537150544", source: "Anabil" },
+  { market: "Panda - 311 - Unayzah - Industrial - Qassim", name: "Md Shohal Mil", phone: "+966537150544", source: "Anabil" },
+  { market: "Othaim - 45 - Al Maznab - Qassim", name: "Md Shohal Mil", phone: "+966537150544", source: "Anabil" },
+  { market: "Panda - 301 - Unayzah - Qassim", name: "Md Shohal Mil", phone: "+966537150544", source: "Anabil" },
+  { market: "Panda - 100 - Takhasusi", name: "Anwar Zino Said", phone: "+966530118428", source: "Anabil" },
+  { market: "Panda - 10010 - Om Alhamam", name: "Anwar Zino Said", phone: "+966530118428", source: "Anabil" },
+  { market: "Panda - 10026 - Al Nasiria", name: "Anwar Zino Said", phone: "+966530118428", source: "Anabil" },
+  { market: "Danube - Madar", name: "Anwar Zino Said", phone: "+966530118428", source: "Anabil" },
+  { market: "Tamimi - 144 - Takhasusi", name: "Anwar Zino Said", phone: "+966530118428", source: "Anabil" },
+  { market: "Farm Stores - 51 - Al Sharfea", name: "Anwar Zino Said", phone: "+966530118428", source: "Anabil" },
+  { market: "Lulu - Mraba", name: "Adeem Abu Bakr", phone: "+966533662182", source: "Anabil" },
+  { market: "Panda - 4 - Al Furzdq St.", name: "Adeem Abu Bakr", phone: "+966533662182", source: "Anabil" },
+  { market: "Panda - 5 - Al Furzdq St.", name: "Adeem Abu Bakr", phone: "+966533662182", source: "Anabil" },
+  { market: "Othaim - 20 - Al Wzarat", name: "Adeem Abu Bakr", phone: "+966533662182", source: "Anabil" },
+  { market: "Tamimi - 136 - Al Dabab", name: "Adeem Abu Bakr", phone: "+966533662182", source: "Anabil" },
+  { market: "Othaim - 27 - Al Kazan", name: "Adeem Abu Bakr", phone: "+966533662182", source: "Anabil" },
+  { market: "Danube - Magrazt", name: "Amjad Khan", phone: "+966565796733", source: "Anabil" },
+  { market: "Tamimi - 134 - Al Nazha", name: "Amjad Khan", phone: "+966565796733", source: "Anabil" },
+  { market: "Sadhan - 20 - Olaya", name: "Amjad Khan", phone: "+966565796733", source: "Anabil" },
+  { market: "Othaim 156 - Riyadh", name: "Amjad Khan", phone: "+966565796733", source: "Anabil" },
+  { market: "Spinneys - Almuraj", name: "Amjad Khan", phone: "+966565796733", source: "Anabil" },
+  { market: "Spar - Al Nazha", name: "Amjad Khan", phone: "+966565796733", source: "Anabil" },
+  { market: "Othaim - 6 - Al Moroj", name: "Saleh Bahlwan", phone: "+966532301119", source: "Anabil" },
+  { market: "Panda - 13 - Al Morslat", name: "Saleh Bahlwan", phone: "+966532301119", source: "Anabil" },
+  { market: "Panda - 10022 - Riyadh Gallery", name: "Saleh Bahlwan", phone: "+966532301119", source: "Anabil" },
+  { market: "Sadhan - 110 - Moroj", name: "Saleh Bahlwan", phone: "+966532301119", source: "Anabil" },
+  { market: "Aljazerah - Riyadh - Al Ghdeer", name: "Saleh Bahlwan", phone: "+966532301119", source: "Anabil" },
+  { market: "Basaten Al Qassim - Al Moroog - Riyadh", name: "Saleh Bahlwan", phone: "+966532301119", source: "Anabil" },
+  { market: "Panda - 304 - Al Magmah - Qassim", name: "Omran Sadiq Al Rhman", phone: "+966509834315", source: "Mayar" },
+  { market: "Othaim - 40 - Al Magmah - Qassim", name: "Omran Sadiq Al Rhman", phone: "+966509834315", source: "Mayar" },
+  { market: "Panda - 10018 - Dawadmi - Qassim", name: "Omran Sadiq Al Rhman", phone: "+966509834315", source: "Mayar" },
+  { market: "Panda - 175 - Hottah Sodeer - Qassim", name: "Omran Sadiq Al Rhman", phone: "+966509834315", source: "Mayar" },
+  { market: "Othaim - 173 - Al Zolfi - Qassim", name: "Omran Sadiq Al Rhman", phone: "+966509834315", source: "Mayar" },
+  { market: "Othaim - 316 - Al Zolfi - Qassim", name: "Omran Sadiq Al Rhman", phone: "+966509834315", source: "Mayar" },
+  { market: "Lulu - Hail - Al Jamihiya - Qassim", name: "Thahir Harid", phone: null, source: "Mayar" },
+  { market: "Danube - 165 - Hail - Qassim", name: "Thahir Harid", phone: null, source: "Mayar" },
+  { market: "Panda - 306 - Hail - Sobyan - Qassim", name: "Thahir Harid", phone: null, source: "Mayar" },
+  { market: "Panda - 302 - Hail - Al Zabara - Qassim", name: "Thahir Harid", phone: null, source: "Mayar" },
+  { market: "Othaim 403", name: "Thahir Harid", phone: null, source: "Mayar" },
+  { market: "Othaim - 100 - Hail - Qassim", name: "Thahir Harid", phone: null, source: "Mayar" },
+  { market: "Panda - 34 - Madina Rd. - Qassim", name: "Mamoon Hassan", phone: "+966530640513", source: "Anabil" },
+  { market: "Panda - 313 - Hael Rd. - Qassim", name: "Mamoon Hassan", phone: "+966530640513", source: "Anabil" },
+  { market: "Othaim - 185 - Al Nahda - Qassim", name: "Mamoon Hassan", phone: "+966530640513", source: "Anabil" },
+  { market: "Tamimi - 192 - King Abdulaziz Rd. - Qassim", name: "Mamoon Hassan", phone: "+966530640513", source: "Anabil" },
+  { market: "Danube 178", name: "Mamoon Hassan", phone: "+966530640513", source: "Anabil" },
+  { market: "Othaim - 831 - Buraydah AlRabwah dist", name: "Mamoon Hassan", phone: "+966530640513", source: "Anabil" },
+  { market: "Othaim 423", name: "Faisal Aziz", phone: "+966535930716", source: "Eye Display" },
+  { market: "Othaim 431", name: "Faisal Aziz", phone: "+966535930716", source: "Eye Display" },
+  { market: "Othaim 415", name: "Faisal Aziz", phone: "+966535930716", source: "Eye Display" },
+  { market: "Panda - 30004 - Hail - Wasita - Qassim", name: "Faisal Aziz", phone: "+966535930716", source: "Eye Display" },
+  { market: "Othaim 462", name: "Faisal Aziz", phone: "+966535930716", source: "Eye Display" },
+  { market: "Al Hussaen Mall", name: "Faisal Aziz", phone: "+966535930716", source: "Eye Display" },
+  { market: "Carrefour - Rawaf Mall", name: "Wamiq Jasoor", phone: null, source: "Eye Display" },
+  { market: "Panda 30001", name: "Wamiq Jasoor", phone: null, source: "Eye Display" },
+  { market: "Othaim 160", name: "Wamiq Jasoor", phone: null, source: "Eye Display" },
+  { market: "Othaim 332", name: "Wamiq Jasoor", phone: null, source: "Eye Display" },
+  { market: "Othaim 434", name: "Wamiq Jasoor", phone: null, source: "Eye Display" },
+  { market: "Othaim 746", name: "Wamiq Jasoor", phone: null, source: "Eye Display" },
+  { market: "Othaim - 326 - Al Rashidiya - Qassim", name: "Abu Nayeem", phone: null, source: "Eye Display" },
+  { market: "Othaim - 167 - Al Nahda - Qassim", name: "Abu Nayeem", phone: null, source: "Eye Display" },
+  { market: "Othaim 112", name: "Abu Nayeem", phone: null, source: "Eye Display" },
+  { market: "Othaim - 311 - Ayoun Al Jowa - Qassim", name: "Abu Nayeem", phone: null, source: "Eye Display" },
+  { market: "Panda - 314 - Al Fayziya - Qassim", name: "Abu Nayeem", phone: null, source: "Eye Display" },
+  { market: "Panda - 308 - Al Rashidiya - Qassim", name: "Abu Nayeem", phone: null, source: "Eye Display" },
+  { market: "Othaim - 189 - Al Suli", name: "Ali Allaf", phone: "+966509995191", source: "Mayar" },
+  { market: "Othaim - 190 - Al Suli", name: "Ali Allaf", phone: "+966509995191", source: "Mayar" },
+  { market: "Panda - 136 - Al Fiha", name: "Ali Allaf", phone: "+966509995191", source: "Mayar" },
+  { market: "Othaim - 368 - Rabwa", name: "Ali Allaf", phone: "+966509995191", source: "Mayar" },
+  { market: "Othaim - 8 - Al Suli", name: "Ali Allaf", phone: "+966509995191", source: "Mayar" },
+  { market: "Panda - 10014 - Yarmouk", name: "Lafi Alharbi", phone: "+966557688514", source: "Mayar" },
+  { market: "Panda - 161 - Monisiya Dammam St.", name: "Lafi Alharbi", phone: "+966557688514", source: "Mayar" },
+  { market: "Othaim - 319 - Damam Road", name: "Lafi Alharbi", phone: "+966557688514", source: "Mayar" },
+  { market: "Othaim - 420 - Eshbelya - Riyadh", name: "Lafi Alharbi", phone: "+966557688514", source: "Mayar" },
+  { market: "Othaim - 413 - Al Mounsyah - Riyadh", name: "Lafi Alharbi", phone: "+966557688514", source: "Mayar" },
+  { market: "Othaim - 417 - Riyadh", name: "Amaar Slama Mohammed", phone: "+966504774119", source: "Mayar" },
+  { market: "Panda - 135 - Tariqat Salman Alfarisi", name: "Amaar Slama Mohammed", phone: "+966504774119", source: "Mayar" },
+  { market: "Othaim 792", name: "Amaar Slama Mohammed", phone: "+966504774119", source: "Mayar" },
+  { market: "Othaim - 743", name: "Amaar Slama Mohammed", phone: "+966504774119", source: "Mayar" },
+  { market: "Othaim - 32 - Kaled Abn Alwled", name: "Amaar Slama Mohammed", phone: "+966504774119", source: "Mayar" },
+  { market: "Sadhan Thumamah", name: "Turki Al-Mahaya", phone: "+966592492394", source: "Mayar" },
+  { market: "Farm Stores - 58 - Thumama", name: "Turki Al-Mahaya", phone: "+966592492394", source: "Mayar" },
+  { market: "Danube - Thumama", name: "Turki Al-Mahaya", phone: "+966592492394", source: "Mayar" },
+  { market: "Panda - 155 - Cortoba", name: "Turki Al-Mahaya", phone: "+966592492394", source: "Mayar" },
+  { market: "Othaim - 157 - Riyadh", name: "Turki Al-Mahaya", phone: "+966592492394", source: "Mayar" },
+  { market: "Panda - 110 - Al Hamra", name: "Mohammed Thunayyaii", phone: "+966502022301", source: "Mayar" },
+  { market: "Othaim - 37 - Al Nazha", name: "Mohammed Thunayyaii", phone: "+966502022301", source: "Mayar" },
+  { market: "Danube - Waha", name: "Mohammed Thunayyaii", phone: "+966502022301", source: "Mayar" },
+  { market: "Tamimi - 180 - Ashbilih", name: "Mohammed Thunayyaii", phone: "+966502022301", source: "Mayar" },
+  { market: "Panda - 10013 - Shaykh Jabir St.", name: "Mohammed Thunayyaii", phone: "+966502022301", source: "Mayar" },
+  { market: "Panda - 117 - Nazeem", name: "Raheel Alenizi", phone: "+966583724321", source: "Mayar" },
+  { market: "Othaim - 145 - Nazeem", name: "Raheel Alenizi", phone: "+966583724321", source: "Mayar" },
+  { market: "Othaim - 146 - Rawda - Riyadh", name: "Raheel Alenizi", phone: "+966583724321", source: "Mayar" },
+  { market: "Othaim - 328 - Rawda", name: "Raheel Alenizi", phone: "+966583724321", source: "Mayar" },
+  { market: "A-Market - Nadwah", name: "Raheel Alenizi", phone: "+966583724321", source: "Mayar" },
+  { market: "Othaim - 177 - Al Oreja", name: "Nayaf Nuzhah", phone: "+966502977569", source: "Mayar" },
+  { market: "Othaim - 176 - Laban", name: "Nayaf Nuzhah", phone: "+966502977569", source: "Mayar" },
+  { market: "Lulu Dhahrat Laban - Riyadh", name: "Nayaf Nuzhah", phone: "+966502977569", source: "Mayar" },
+  { market: "Othaim - 374 - Laban", name: "Nayaf Nuzhah", phone: "+966502977569", source: "Mayar" },
+  { market: "Othaim 1001 - Riyadh", name: "Nayaf Nuzhah", phone: "+966502977569", source: "Mayar" },
+  { market: "Panda - 3 - Oruba St", name: "Ali Al-Azzani", phone: "+966504113104", source: "Anabil" },
+  { market: "Panda - 10029 - Om Alhamam", name: "Ali Al-Azzani", phone: "+966504113104", source: "Anabil" },
+  { market: "Panda - 1 - Olaya", name: "Ali Al-Azzani", phone: "+966504113104", source: "Anabil" },
+  { market: "Othaim - 86 - Om Alhamam", name: "Ali Al-Azzani", phone: "+966504113104", source: "Anabil" },
+  { market: "Othaim - 15 - Olaya", name: "Ali Al-Azzani", phone: "+966504113104", source: "Anabil" },
+  { market: "Panda - 26 - Hamza St.", name: "Mohammed Farj", phone: "+966567352891", source: "Anabil" },
+  { market: "Panda - 10 - Al Swedi", name: "Mohammed Farj", phone: "+966567352891", source: "Anabil" },
+  { market: "Othaim - 303 - Atega", name: "Mohammed Farj", phone: "+966567352891", source: "Anabil" },
+  { market: "Othaim 331 - Riyadh", name: "Mohammed Farj", phone: "+966567352891", source: "Anabil" },
+  { market: "Carrefour - Qasr Mall", name: "Mohammed Farj", phone: "+966567352891", source: "Anabil" },
+  { market: "Lulu Batha", name: "Ibrahim Saleh", phone: "+966546570314", source: "Anabil" },
+  { market: "Othaim - 2 - Al Thubat", name: "Ibrahim Saleh", phone: "+966546570314", source: "Anabil" },
+  { market: "Tamimi - 151 - Al Malaz", name: "Ibrahim Saleh", phone: "+966546570314", source: "Anabil" },
+  { market: "Tamimi - 135 - Ahsa St.", name: "Ibrahim Saleh", phone: "+966546570314", source: "Anabil" },
+  { market: "Panda - 8 - Jarir", name: "Ibrahim Saleh", phone: "+966546570314", source: "Anabil" },
+  { market: "Danube - Badeah", name: "Ahmed Talb", phone: "+966509846585", source: "Anabil" },
+  { market: "Panda - 102 - Exit 26 Alsuwidi", name: "Ahmed Talb", phone: "+966509846585", source: "Anabil" },
+  { market: "Othaim - 364 - Riyadh", name: "Ahmed Talb", phone: "+966509846585", source: "Anabil" },
+  { market: "Othaim - 362 - Riyadh", name: "Ahmed Talb", phone: "+966509846585", source: "Anabil" },
+  { market: "Othaim - 376 - Riyadh", name: "Ahmed Talb", phone: "+966509846585", source: "Anabil" },
+  { market: "Lulu Al Malaz - Riyadh", name: "Khader Muhammad", phone: "+966504882271", source: "Eye Display" },
+  { market: "Danube - Rawabi", name: "Khader Muhammad", phone: "+966504882271", source: "Eye Display" },
+  { market: "Tamimi - 140 - Rabwa", name: "Khader Muhammad", phone: "+966504882271", source: "Eye Display" },
+  { market: "Panda - 124 - Rabwa", name: "Khader Muhammad", phone: "+966504882271", source: "Eye Display" },
+  { market: "Othaim - 329 - Al Malaz", name: "Khader Muhammad", phone: "+966504882271", source: "Eye Display" },
+  { market: "Panda - 10007 - Wadi Laban", name: "Waleed Ali", phone: "+966507018252", source: "Anabil" },
+  { market: "Panda - 132 - Dirab", name: "Waleed Ali", phone: "+966507018252", source: "Anabil" },
+  { market: "Othaim - 373 - Riyadh", name: "Waleed Ali", phone: "+966507018252", source: "Anabil" },
+  { market: "Othaim - 186 - Al Shefa", name: "Waleed Ali", phone: "+966507018252", source: "Anabil" },
+  { market: "Othaim - 397 - Riyadh", name: "Waleed Ali", phone: "+966507018252", source: "Anabil" },
+  { market: "Panda - 164 - Othman Bin Efan St.", name: "Ahmed Mohamed", phone: "+966597166908", source: "Anabil" },
+  { market: "Tamimi - 155 - Othman Bin Efan St.", name: "Ahmed Mohamed", phone: "+966597166908", source: "Anabil" },
+  { market: "Lulu - Yasmeen", name: "Ahmed Mohamed", phone: "+966597166908", source: "Anabil" },
+  { market: "Spar - Yasmeen", name: "Ahmed Mohamed", phone: "+966597166908", source: "Anabil" },
+  { market: "Panda - 101 - Exit 7", name: "Ahmed Mohamed", phone: "+966597166908", source: "Anabil" },
+  { market: "Othaim - 39 - Al Swedi", name: "Ayaman Abu Baker", phone: "+966557142463", source: "Anabil" },
+  { market: "Othaim - 26 - Manfouha", name: "Ayaman Abu Baker", phone: "+966557142463", source: "Anabil" },
+  { market: "Othaim - 36 - Manfouha", name: "Ayaman Abu Baker", phone: "+966557142463", source: "Anabil" },
+  { market: "Othaim 352 - Al Suwaidi - Riyadh", name: "Ayaman Abu Baker", phone: "+966557142463", source: "Anabil" },
+  { market: "Mohamed Saeed Bal Bayd", name: "Ayaman Abu Baker", phone: "+966557142463", source: "Anabil" },
+  { market: "Panda - 10003 - Yasmeen", name: "Salem Bakr", phone: "+9665521478502", source: "Anabil" },
+  { market: "Panda - 170 - Yasmeen", name: "Salem Bakr", phone: "+9665521478502", source: "Anabil" },
+  { market: "Othaim - 148 - Al Nafel", name: "Salem Bakr", phone: "+9665521478502", source: "Anabil" },
+  { market: "Tamimi - 162 - Tariq Abu Bakr Alsadiq Riyadh", name: "Salem Bakr", phone: "+9665521478502", source: "Anabil" },
+  { market: "Tamimi - 164 - Al Narjas", name: "Salem Bakr", phone: "+9665521478502", source: "Anabil" },
+  { market: "Panda - 120 - Al Nassem - Road 40", name: "Usman Sadaqat Ali", phone: "+966594389660", source: "Anabil" },
+  { market: "Othaim - 122 - Al Nassem", name: "Usman Sadaqat Ali", phone: "+966594389660", source: "Anabil" },
+  { market: "Panda - 146 - Al Nassem", name: "Usman Sadaqat Ali", phone: "+966594389660", source: "Anabil" },
+  { market: "Othaim - 97 - Al Nassem", name: "Usman Sadaqat Ali", phone: "+966594389660", source: "Anabil" },
+  { market: "Ramez Alnassem", name: "Usman Sadaqat Ali", phone: "+966594389660", source: "Anabil" },
+  { market: "Othaim - 321 - Yasmeen", name: "Asif Muhammad", phone: "+966552852353", source: "Anabil" },
+  { market: "Othaim - 344 - Yasmeen", name: "Asif Muhammad", phone: "+966552852353", source: "Anabil" },
+  { market: "Farm Stores - 50 - Yasmeen", name: "Asif Muhammad", phone: "+966552852353", source: "Anabil" },
+  { market: "Danube - Yasmeen", name: "Asif Muhammad", phone: "+966552852353", source: "Anabil" },
+  { market: "Tamimi - 150 - Al Sahafa - Riyadh", name: "Asif Muhammad", phone: "+966552852353", source: "Anabil" },
+  { market: "Panda - 10008 - Rayan", name: "KANWAL FEROZ", phone: null, source: "Anabil" },
+  { market: "Danube Khurays - Riyadh", name: "KANWAL FEROZ", phone: null, source: "Anabil" },
+  { market: "Othaim - 188 - Rawda", name: "KANWAL FEROZ", phone: null, source: "Anabil" },
+  { market: "Tamimi - 170 - Rawda - Riyadh", name: "KANWAL FEROZ", phone: null, source: "Anabil" },
+  { market: "Sadhan - 60 - Khurais", name: "KANWAL FEROZ", phone: null, source: "Anabil" },
+  { market: "Othaim - 43 - Al Karja", name: "Abzir Musa", phone: "+966583096621", source: "Anabil" },
+  { market: "Othaim - 312 - Al Karja", name: "Abzir Musa", phone: "+966583096621", source: "Anabil" },
+  { market: "Othaim - 191 - Al Karja", name: "Abzir Musa", phone: "+966583096621", source: "Anabil" },
+  { market: "Danube - Al Karja", name: "Abzir Musa", phone: "+966583096621", source: "Anabil" },
+  { market: "Lulu - Al Karja", name: "Abzir Musa", phone: "+966583096621", source: "Anabil" },
+  { market: "Othaim - 410 - Riyadh", name: "Ahmed Hazazi", phone: "+966538541825", source: "Mayar" },
+  { market: "Othaim - 394 - Yarmouk", name: "Ahmed Hazazi", phone: "+966538541825", source: "Mayar" },
+  { market: "Panda - 140 - Nazeem", name: "Ahmed Hazazi", phone: "+966538541825", source: "Mayar" },
+  { market: "Othaim - 372 - Al Qadisia", name: "Ahmed Hazazi", phone: "+966538541825", source: "Mayar" },
+  { market: "Othaim - 16 - Al Shefa", name: "Saleh Shamlan", phone: "+966594464138", source: "Mayar" },
+  { market: "Othaim - 64 - Al Shefa", name: "Saleh Shamlan", phone: "+966594464138", source: "Mayar" },
+  { market: "Panda - 144 - Al Shefa", name: "Saleh Shamlan", phone: "+966594464138", source: "Mayar" },
+  { market: "A-Market - Suwaidi", name: "Saleh Shamlan", phone: "+966594464138", source: "Mayar" },
+  { market: "Panda - 121 - Eskan Alkharj", name: "Yahaya Al Sybyani", phone: "+966566106805", source: "Mayar" },
+  { market: "Othaim - 315 - Hayr", name: "Yahaya Al Sybyani", phone: "+966566106805", source: "Mayar" },
+  { market: "Othaim - 49 - Alazezia", name: "Yahaya Al Sybyani", phone: "+966566106805", source: "Mayar" },
+  { market: "Othaim - 305 - Eskan Alkharj", name: "Yahaya Al Sybyani", phone: "+966566106805", source: "Mayar" },
+  { market: "Tamimi - 148 - Hattin", name: "Abdulaziz Alharbi", phone: "+966503762868", source: "Mayar" },
+  { market: "Tamimi - 160 - Thumama", name: "Abdulaziz Alharbi", phone: "+966503762868", source: "Mayar" },
+  { market: "Othaim - 421 - ex 4", name: "Abdulaziz Alharbi", phone: "+966503762868", source: "Mayar" },
+  { market: "Panda - 125 - Hattin", name: "Abdulaziz Alharbi", phone: "+966503762868", source: "Mayar" },
+  { market: "Panda - 118 - Al Azezia", name: "Naif Futayni", phone: "+966533119007", source: "Mayar" },
+  { market: "Panda - 131 - Dar Albayda", name: "Naif Futayni", phone: "+966533119007", source: "Mayar" },
+  { market: "Othaim - 181 - Riyadh", name: "Naif Futayni", phone: "+966533119007", source: "Mayar" },
+  { market: "Nesto - Riyadh", name: "Naif Futayni", phone: "+966533119007", source: "Mayar" },
+  { market: "Othaim - 194 - Al Dreya", name: "Ahmed Al Saad", phone: "+966558875617", source: "Mayar" },
+  { market: "Othaim - 395 - Riyadh", name: "Ahmed Al Saad", phone: "+966558875617", source: "Mayar" },
+  { market: "Al Jazeera Markets - Al Mursalat", name: "Ahmed Al Saad", phone: "+966558875617", source: "Mayar" },
+  { market: "Othaim 342 - Riyadh", name: "Ahmed Al Saad", phone: "+966558875617", source: "Mayar" },
+  { market: "Carrefour - Sundus", name: "Najeeb Saeed Munssir", phone: "+966509184211", source: "Anabil" },
+  { market: "Tamimi - 142 - Irqah", name: "Najeeb Saeed Munssir", phone: "+966509184211", source: "Anabil" },
+  { market: "Tamimi - 137 - Al Rakh Riyadh", name: "Najeeb Saeed Munssir", phone: "+966509184211", source: "Anabil" },
+  { market: "Danube - Irqah", name: "Najeeb Saeed Munssir", phone: "+966509184211", source: "Anabil" },
+  { market: "Panda - Alramal 10002", name: "Mohammed Mohasan Bayts", phone: "+966551122458", source: "Anabil" },
+  { market: "Panda - 158 - Al Mansora", name: "Mohammed Mohasan Bayts", phone: "+966551122458", source: "Anabil" },
+  { market: "Othaim - 29 - Al Mansora", name: "Mohammed Mohasan Bayts", phone: "+966551122458", source: "Anabil" },
+  { market: "Othaim - 98 - Al Mansora", name: "Mohammed Mohasan Bayts", phone: "+966551122458", source: "Anabil" },
+  { market: "Carrefour Exit 10 - Riyadh", name: "Mohammed Shaheen", phone: null, source: "Anabil" },
+  { market: "Othaim - 363 - Riyadh", name: "Mohammed Shaheen", phone: null, source: "Anabil" },
+  { market: "Othaim - 389 - Riyadh", name: "Mohammed Shaheen", phone: null, source: "Anabil" },
+  { market: "Panda - 119 - Al Qadisia", name: "Mohammed Shaheen", phone: null, source: "Anabil" },
+  { market: "Carrefour - Riyadh Park", name: "Yunus Muhammad", phone: "+966544163305", source: "Anabil" },
+  { market: "Panda - 10004 - Al Salbukh", name: "Yunus Muhammad", phone: "+966544163305", source: "Anabil" },
+  { market: "Danube - Hattin", name: "Yunus Muhammad", phone: "+966544163305", source: "Anabil" },
+  { market: "Othaim - 7 - Al Moroj", name: "Yunus Muhammad", phone: "+966544163305", source: "Anabil" },
+  { market: "Panda - 129 - Al Sahafa", name: "Taha Omar", phone: null, source: "Anabil" },
+  { market: "Danube - Al Sahafa", name: "Taha Omar", phone: null, source: "Anabil" },
+  { market: "Othaim - 323 - Yasmeen", name: "Taha Omar", phone: null, source: "Anabil" },
+  { market: "Tamimi - 152 - Anas Bin Malik", name: "Taha Omar", phone: null, source: "Anabil" },
+  { market: "Lulu - Yarmouk", name: "Qasim Ali", phone: "+966505339729", source: "Anabil" },
+  { market: "Panda - 156 - Thumama", name: "Qasim Ali", phone: "+966505339729", source: "Anabil" },
+  { market: "Danube - Qartba", name: "Qasim Ali", phone: "+966505339729", source: "Anabil" },
+  { market: "Tamimi - 175 - Cortoba Riyadh", name: "Qasim Ali", phone: "+966505339729", source: "Anabil" },
+  { market: "Carrefour - Tala Mall", name: "Osama Edress", phone: "+966548684354", source: "Anabil" },
+  { market: "Danube - Ghadeer", name: "Osama Edress", phone: "+966548684354", source: "Anabil" },
+  { market: "Panda - 114 - Abu Bakr Alsadiq St.", name: "Osama Edress", phone: "+966548684354", source: "Anabil" },
+  { market: "Danube - Al Aqeq", name: "Osama Edress", phone: "+966548684354", source: "Anabil" },
+  { market: "Panda - 10012 - Badeah", name: "Mazen Abdel Razzak", phone: "+966576729227", source: "Anabil" },
+  { market: "Panda - 137 - Al Shefa", name: "Mazen Abdel Razzak", phone: "+966576729227", source: "Anabil" },
+  { market: "Tamimi - 165 - Badeah", name: "Mazen Abdel Razzak", phone: "+966576729227", source: "Anabil" },
+  { market: "Othaim - 12 - Badeah", name: "Mazen Abdel Razzak", phone: "+966576729227", source: "Anabil" },
+  { market: "Danube Sulaymaniyah - panorama", name: "Yonatan Milak", phone: "+966532517291", source: "Anabil" },
+  { market: "Danube Hayat mall - Mursalat", name: "Yonatan Milak", phone: "+966532517291", source: "Anabil" },
+  { market: "Tamimi - 131 - King Fahad St.", name: "Yonatan Milak", phone: "+966532517291", source: "Anabil" },
+  { market: "Al Jazerah - Al Sulymanyah - Riyadh", name: "Yonatan Milak", phone: "+966532517291", source: "Anabil" },
+  { market: "Lulu - Khurais", name: "Ghalib", phone: "+966500382571", source: "Anabil" },
+  { market: "Othaim - 83 - Al Nassem", name: "Ghalib", phone: "+966500382571", source: "Anabil" },
+  { market: "Tamimi - 200 - Khurais", name: "Ghalib", phone: "+966500382571", source: "Anabil" },
+  { market: "Othaim - 192 - Al Nassem", name: "Ghalib", phone: "+966500382571", source: "Anabil" },
+  { market: "Othaim - 28 - Rabwa", name: "Mohamed Fairouz", phone: "+966543994112", source: "Anabil" },
+  { market: "Sadhan - 140 - Rabwa", name: "Mohamed Fairouz", phone: "+966543994112", source: "Anabil" },
+  { market: "Othaim - 9 - Rabwa", name: "Mohamed Fairouz", phone: "+966543994112", source: "Anabil" },
+  { market: "Othaim - 154 - Rabwa", name: "Mohamed Fairouz", phone: "+966543994112", source: "Anabil" },
+  { market: "Panda - 143 - Monisiya Dammam St.", name: "Hussein Ali", phone: "+966530852252", source: "Anabil" },
+  { market: "Othaim - 370 - Al Qadisia", name: "Hussein Ali", phone: "+966530852252", source: "Anabil" },
+  { market: "Danube - Yarmouk", name: "Hussein Ali", phone: "+966530852252", source: "Anabil" },
+  { market: "Othaim - 411 - Riyadh", name: "Hussein Ali", phone: "+966530852252", source: "Anabil" },
+  { market: "Panda - 10023 - Al Karja", name: "Abdallah Mohamed", phone: null, source: "Anabil" },
+  { market: "Othaim - 94 - Al Karja", name: "Abdallah Mohamed", phone: null, source: "Anabil" },
+  { market: "Othaim - 138 - Al Karja", name: "Abdallah Mohamed", phone: null, source: "Anabil" },
+  { market: "Othaim - 463", name: "Abdallah Mohamed", phone: null, source: "Anabil" },
+  { market: "Panda - 128 - Alkharj", name: "Muhannad Khalil", phone: "+966501227595", source: "Eye Display" },
+  { market: "Othaim 361 - Al Karja", name: "Muhannad Khalil", phone: "+966501227595", source: "Eye Display" },
+  { market: "Panda - 138 - Al Karja", name: "Muhannad Khalil", phone: "+966501227595", source: "Eye Display" },
+  { market: "Farm Stores - 69 - Al Karja", name: "Muhannad Khalil", phone: "+966501227595", source: "Eye Display" },
+  { market: "Panda - 7 - Al Nassem", name: "Fahad Abu Baker", phone: null, source: "Anabil" },
+  { market: "Carrefour - Khurais Mall", name: "Fahad Abu Baker", phone: null, source: "Anabil" },
+  { market: "Othaim - 172 - Khurais", name: "Fahad Abu Baker", phone: null, source: "Anabil" },
+  { market: "Noda", name: "Ali Omar", phone: null, source: "Anabil" },
+  { market: "Al Rasheed Sky Mall - Exit 14", name: "Ali Omar", phone: null, source: "Anabil" },
+  { market: "Al Sabty", name: "Ali Omar", phone: null, source: "Anabil" },
+  { market: "Village", name: "Nazrul Islam", phone: null, source: "Anabil" },
+  { market: "Nozha", name: "Nazrul Islam", phone: null, source: "Anabil" },
+  { market: "Kraz", name: "Nazrul Islam", phone: null, source: "Anabil" },
+  { market: "A-Market - Naseem", name: "Parwez", phone: "+966503762868", source: "Mayar" },
+  { market: "A-Market - Rawabi", name: "Parwez", phone: "+966503762868", source: "Mayar" },
+  { market: "Carrefour - Granada Mall", name: "Omer Sidqan Ali", phone: "+966531204706", source: "Anabil" },
+  { market: "Panda - 104 - Al Nazha", name: "Omer Sidqan Ali", phone: "+966531204706", source: "Anabil" },
+  { market: "Al Sala Al Agtisadeya 17", name: "Debela Wakjira Meko", phone: "+966538738586", source: "Anabil" },
+  { market: "Top Up - Exit 14", name: "Debela Wakjira Meko", phone: "+966538738586", source: "Anabil" },
+  { market: "Asas Food", name: "Bakr Saeed", phone: "+966510140622", source: "Eye Display" },
+  { market: "Shona Limited Company", name: "Bakr Saeed", phone: "+966510140622", source: "Eye Display" },
+  { market: "Hyper Al Madinah Market", name: "Yaqoob Yusef", phone: "+966598806141", source: "Eye Display" },
+  { market: "Al-Rasheed Sky Mall - Al-Mansorah", name: "Yaqoob Yusef", phone: "+966598806141", source: "Eye Display" },
+];
+
+// ======= بيانات المناديب =======
+const reps = [
+  // Irfan
+  { market: "Panda - 117 - Nazeem", name: "Irfan", phone: "+966582593997" },
+  { market: "Panda - 119 - Al Qadisia", name: "Irfan", phone: "+966582593997" },
+  { market: "Panda - 110 - Al Hamra", name: "Irfan", phone: "+966582593997" },
+  { market: "Panda - 116 - Rawda", name: "Irfan", phone: "+966582593997" },
+  { market: "Panda - 10014 - Yarmouk", name: "Irfan", phone: "+966582593997" },
+  { market: "Panda - 10013 - Shaykh Jabir St.", name: "Irfan", phone: "+966582593997" },
+  { market: "Panda - 140 - Nazeem", name: "Irfan", phone: "+966582593997" },
+  { market: "Panda - 188 - Janadriyah Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Danube - Waha", name: "Irfan", phone: "+966582593997" },
+  { market: "Danube - Andalos", name: "Irfan", phone: "+966582593997" },
+  { market: "Carrefour - Khurais Mall", name: "Irfan", phone: "+966582593997" },
+  { market: "Carrefour - Granada Mall", name: "Irfan", phone: "+966582593997" },
+  { market: "Carrefour Exit 10 - Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Carrefour Dark Store - Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 37 - Al Nazha", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 32 - Kaled Abn Alwled", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 117 - Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 129 - Exit 11 Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 172 - Khurais", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 188 - Rawda", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 145 - Nazeem", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 146 - Rawda - Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 328 - Rawda", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 718 - Hy Al Falah Jeddah", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 363 - AlQuds St Prince Muhammad bin Soud", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 394 - Qateef AlQuds St.", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 721 - Nozha Prince Meqren", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 389 - Jeddah", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 723 - Dammam Hailal Sharouk Airport", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 725 - Dammam Al Adamah 18th St.", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 724 - Riyadh Qassim King Fahad", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 727 - Riyadh Dammam Rd", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 420 - Riyadh Al Yarmouk", name: "Irfan", phone: "+966582593997" },
+  { market: "Sadhan - 713 - Rafia", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 417 - Jeddah Al Rawabi Biladen St.", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 411 - Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 476 - Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 752 - Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 743 - Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 767 - Isbileya Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Othaim - 770 - AlHamra", name: "Irfan", phone: "+966582593997" },
+  { market: "Tamimi - 170 - Rawda - Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Tamimi - 180 - Ashbilih", name: "Irfan", phone: "+966582593997" },
+  { market: "Tamimi - 200 - Khurais", name: "Irfan", phone: "+966582593997" },
+  { market: "Tamimi - 143 - Salman Al Farsi", name: "Irfan", phone: "+966582593997" },
+  { market: "Tamimi - 158 - Sheikh Jaber", name: "Irfan", phone: "+966582593997" },
+  { market: "Tamimi - 215 - Granada Compound", name: "Irfan", phone: "+966582593997" },
+  { market: "Tamimi - 305 - Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Omar Bin Abdulaziz - 3725", name: "Irfan", phone: "+966582593997" },
+  { market: "Omar Bin Abdulaziz - Riyadh", name: "Irfan", phone: "+966582593997" },
+  { market: "Sadhan - 170 - Ring Rd Al Quds", name: "Irfan", phone: "+966582593997" },
+  { market: "Lulu - Khurais", name: "Irfan", phone: "+966582593997" },
+  { market: "Lulu - Yarmouk", name: "Irfan", phone: "+966582593997" },
+  { market: "Farm Stores - 100 - Al Hamra", name: "Irfan", phone: "+966582593997" },
+  // Azeemuddin
+  { market: "Panda - 129 - Al Sahafa", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Panda - 155 - Cortoba", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Tamimi - 155 - Othman Bin Efan St.", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Tamimi - 150 - Al Sahafa - Riyadh", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Tamimi - 160 - Thumama", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Panda - 10003 - Yasmeen", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Tamimi - 175 - Cortoba Riyadh", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Panda - 143 - Monisiya Dammam St.", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Panda - 164 - Othman Bin Efan St.", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Panda - 161 - Monisiya Dammam St.", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Danube - Qartba", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Tamimi - 152 - Anas Bin Malik", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Farm Stores - 50 - Yasmeen", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Panda - 101 - Exit 7", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Panda - 156 - Thumama", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Tamimi - 162 - Tariq Abu Bakr Alsadiq Riyadh", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Danube - Yarmouk", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Panda - 170 - Yasmeen", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Farm Stores - 58 - Thumama", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Tamimi - 164 - Al Narjas", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 319 - Riyadh", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 334 - Riyadh", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Danube - Thumama", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Hassa AlRawdha", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 323 - Yasmeen", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 321 - Yasmeen", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 344 - Yasmeen", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 342 - Riyadh", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 370 - Al Qadisia", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 372 - AlQuds St", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Lulu - Yasmeen", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 717 - Riyadh", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 714 - Jeddah", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 410 - Riyadh Kharj King Abdullah", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 413 - Qurubah", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 421 - Al Azizyah", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Panda - 177 - Riyadh", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 780 - Prince Yazeed", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 782 - Al Kawthar St.", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 786 - Riyadh", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Sadhan Thumamah", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 816 - Al Nada", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Othaim - 821 - Salat Al Remal", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Tamimi - 168 - Narjes", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Tamimi - 161 - Khozama", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Tamimi - 208 - Riyadh", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Tamimi - 276 - Riyadh", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Tamimi - 167 - Riyadh", name: "Azeemuddin", phone: "+966536219423" },
+  { market: "Panda - 192 - Sadhan", name: "Azeemuddin", phone: "+966536219423" },
+  // Hazem
+  { market: "Panda - 125 - Hattin", name: "Hazem", phone: "+966510304281" },
+  { market: "Panda - 10010 - Om Alhamam", name: "Hazem", phone: "+966510304281" },
+  { market: "Panda - 137 - Al Shefa", name: "Hazem", phone: "+966510304281" },
+  { market: "Panda - 10029 - Om Alhamam", name: "Hazem", phone: "+966510304281" },
+  { market: "Riyadh Qwaih Makkah Road", name: "Hazem", phone: "+966510304281" },
+  { market: "Panda - 190 - Tuwaiq", name: "Hazem", phone: "+966510304281" },
+  { market: "Panda - 149 - Spar Erqa", name: "Hazem", phone: "+966510304281" },
+  { market: "Panda - 189 - Tuwaiq", name: "Hazem", phone: "+966510304281" },
+  { market: "Danube - Irqah", name: "Hazem", phone: "+966510304281" },
+  { market: "Carrefour - Sundus", name: "Hazem", phone: "+966510304281" },
+  { market: "Farm Stores - 51 - Al Sharfea", name: "Hazem", phone: "+966510304281" },
+  { market: "Farm Stores - 78 - Aghoroub", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 86 - Om Alhamam", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 109 - Riyadh", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 170 - Riyadh", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 176 - Laban", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 1001 - Riyadh", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 177 - Al Oreja", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 149 - Toeq", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 310 - Aghoroub", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 362 - Riyadh", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 374 - AlQuds St Prince Muhammad bin Soud", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 376 - Exit 5 King Abdulaziz", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 365 - Jeddah Umalqura Altahliyah", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 710 - Al Moroj", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 722 - Riyadh", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 364 - Dammam Haial Sharouk Airport", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 712 - Riyadh", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 728 - Rawdh Hafsa Bin Omer St.", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 711 - Al Sadaf St Zahrat Namar", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 7798 - Eastern Ring Branch Rd", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - Eastern Ring Branch Rd Al Rabwah", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 494 - Riyadh", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 785 - Riyadh", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 801 - Abu Hanifa", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 806 - Dhahrat Laban", name: "Hazem", phone: "+966510304281" },
+  { market: "Othaim - 807 - As Suwaidi Al Gharabi", name: "Hazem", phone: "+966510304281" },
+  { market: "Tamimi - 137 - Al Rakh Riyadh", name: "Hazem", phone: "+966510304281" },
+  { market: "Tamimi - 144 - Takhasusi", name: "Hazem", phone: "+966510304281" },
+  { market: "Tamimi - 165 - Badeah", name: "Hazem", phone: "+966510304281" },
+  { market: "Tamimi - 142 - Irqah", name: "Hazem", phone: "+966510304281" },
+  { market: "Tamimi - 148 - Hattin", name: "Hazem", phone: "+966510304281" },
+  { market: "Tamimi - 169 - Tuwaiq", name: "Hazem", phone: "+966510304281" },
+  { market: "Abha Al Sharafia Main St", name: "Hazem", phone: "+966510304281" },
+  { market: "Lulu Dhahrat Laban", name: "Hazem", phone: "+966510304281" },
+  { market: "Lulu - Tuwaiq", name: "Hazem", phone: "+966510304281" },
+  { market: "Lulu - Badia", name: "Hazem", phone: "+966510304281" },
+  // Shareef
+  { market: "Othaim - 39 - Al Swedi", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 16 - Al Shefa", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 29 - Al Mansora", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 12 - Badeah", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 64 - Al Shefa", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 26 - Manfouha", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 27 - Al Kazan", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 36 - Manfouha", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 98 - Al Mansora", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 131 - Riyadh", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 140 - Riyadh", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 186 - Al Shefa", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 152 - Riyadh", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 303 - Atega", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 121 - Riyadh", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 373 - Al Danoub AlNahda", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 331 - Khubar King Khaled St.", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 716 - AlHassa King Abdulla St.", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 719 - Jeddah Tahliah", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 397 - Bishah Main", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 352 - Nadeem Al Turuth St.", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 499 - Riyadh", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 737 - Riyadh", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 471 - Riyadh", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 477 - Bader District", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim - 758 - Shubra", name: "Shareef", phone: "+966501459334" },
+  { market: "Othaim Express - 827 - Bader", name: "Shareef", phone: "+966501459334" },
+  { market: "Panda - 6 - Ealishaan", name: "Shareef", phone: "+966501459334" },
+  { market: "Panda - 26 - Hamza St.", name: "Shareef", phone: "+966501459334" },
+  { market: "Panda - 10006 - Al Oreja", name: "Shareef", phone: "+966501459334" },
+  { market: "Panda - 10007 - Wadi Laban", name: "Shareef", phone: "+966501459334" },
+  { market: "Panda - 10012 - Badeah", name: "Shareef", phone: "+966501459334" },
+  { market: "Panda - 127 - Haybr Alsalam", name: "Shareef", phone: "+966501459334" },
+  { market: "Panda - 102 - Exit 26 Alsuwidi", name: "Shareef", phone: "+966501459334" },
+  { market: "Panda - 132 - Dirab", name: "Shareef", phone: "+966501459334" },
+  { market: "Panda - 158 - Al Mansora", name: "Shareef", phone: "+966501459334" },
+  { market: "Panda - 10026 - Al Nasiria", name: "Shareef", phone: "+966501459334" },
+  { market: "Panda - 144 - Al Shefa", name: "Shareef", phone: "+966501459334" },
+  { market: "Muzahmiya - Othaim", name: "Shareef", phone: "+966501459334" },
+  { market: "Danube - Badeah", name: "Shareef", phone: "+966501459334" },
+  { market: "Digital City", name: "Shareef", phone: "+966501459334" },
+  { market: "Carrefour - Qasr Mall", name: "Shareef", phone: "+966501459334" },
+  { market: "West Mall - Jubail Highway", name: "Shareef", phone: "+966501459334" },
+  { market: "Sadhan - Imam University", name: "Shareef", phone: "+966501459334" },
+  { market: "Sadhan - 230 - AlJubaila", name: "Shareef", phone: "+966501459334" },
+  { market: "Lulu Batha", name: "Shareef", phone: "+966501459334" },
+  { market: "Lulu Dar Stor", name: "Shareef", phone: "+966501459334" },
+  // Faisal
+  { market: "Panda - 118 - Al Karja", name: "Faisal", phone: "+966535192147" },
+  { market: "Panda - 121 - Eskan Alkharj", name: "Faisal", phone: "+966535192147" },
+  { market: "Panda - 131 - Dar Albayda", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 49 - Alazezia", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 103 - Riyadh", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 181 - Riyadh", name: "Faisal", phone: "+966535192147" },
+  { market: "Panda - 10023 - Al Karja", name: "Faisal", phone: "+966535192147" },
+  { market: "Panda - 128 - Alkharj", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 94 - Al Karja", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 42 - Al Karja", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 43 - Al Karja", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 129 - Riyadh", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 130 - Riyadh", name: "Faisal", phone: "+966535192147" },
+  { market: "Danube - Al Karja", name: "Faisal", phone: "+966535192147" },
+  { market: "Panda - 138 - Al Karja", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 191 - Al Karja", name: "Faisal", phone: "+966535192147" },
+  { market: "Danube - Al Sahafa", name: "Faisal", phone: "+966535192147" },
+  { market: "Danube - Yasmeen", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 309 - Riyadh", name: "Faisal", phone: "+966535192147" },
+  { market: "Aflaj Wadi Aldawaser - Othaim 147", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 312 - Al Karja", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 138 - Al Karja", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 305 - Eskan Alkharj", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 315 - Riyadh", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 338 - Riyadh", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 82 - Riyadh", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 371 - Riyadh", name: "Faisal", phone: "+966535192147" },
+  { market: "Lulu - Al Karja", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 133 - AlQuds St Prince Muhammad bin Soud", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 361 - King Abdulla Rd.", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 378 - Fanateer AlSedik St.", name: "Faisal", phone: "+966535192147" },
+  { market: "Farm Stores - 69 - Al Karja", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 348 - Kassan Murabba", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 720 - Riyadh Nasim", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 139 - Jeddah Madinah Haifa Mall", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 317 - Jeddah Haramin Yasmeen Mall", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 412 - Dammam Al Nawras", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 416 - Main Street Daryya", name: "Faisal", phone: "+966535192147" },
+  { market: "Tamimi - 153 - Embassy Area", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 463 - Andlus St Al Kharj", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 497 - Riyadh", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 465 - Military Compound", name: "Faisal", phone: "+966535192147" },
+  { market: "Panda - 185 - AlHada Plaza", name: "Faisal", phone: "+966535192147" },
+  { market: "Othaim - 823 - Ad Dar Al Baida", name: "Faisal", phone: "+966535192147" },
+  { market: "AlOthaim Cash and Carry", name: "Faisal", phone: "+966535192147" },
+  { market: "Tamimi - 306 - Mansuriyah", name: "Faisal", phone: "+966535192147" },
+  // Mustafa
+  { market: "King Abdulaziz Rd RYG W.H", name: "Mustafa", phone: "+966566744404" },
+  { market: "Danube - Mursallat", name: "Mustafa", phone: "+966566744404" },
+  { market: "Danube - Sulymania", name: "Mustafa", phone: "+966566744404" },
+  { market: "Danube - Hattin", name: "Mustafa", phone: "+966566744404" },
+  { market: "Danube - Al Aqeq", name: "Mustafa", phone: "+966566744404" },
+  { market: "Danube - Ghadeer", name: "Mustafa", phone: "+966566744404" },
+  { market: "Danube - Magrazt", name: "Mustafa", phone: "+966566744404" },
+  { market: "Danube - Madar", name: "Mustafa", phone: "+966566744404" },
+  { market: "Panda - 4 - Al Furzdq St.", name: "Mustafa", phone: "+966566744404" },
+  { market: "Panda - 100 - Takhasusi", name: "Mustafa", phone: "+966566744404" },
+  { market: "Panda - 1 - Olaya", name: "Mustafa", phone: "+966566744404" },
+  { market: "Panda - 13 - Al Morslat", name: "Mustafa", phone: "+966566744404" },
+  { market: "Panda - 3 - Oruba St", name: "Mustafa", phone: "+966566744404" },
+  { market: "Panda - 114 - Abu Bakr Alsadiq St.", name: "Mustafa", phone: "+966566744404" },
+  { market: "Panda - 10022 - Riyadh Gallery", name: "Mustafa", phone: "+966566744404" },
+  { market: "Panda - 104 - Al Nazha", name: "Mustafa", phone: "+966566744404" },
+  { market: "Panda - 10004 - Al Salbukh", name: "Mustafa", phone: "+966566744404" },
+  { market: "Panda - 187 - Riyadh", name: "Mustafa", phone: "+966566744404" },
+  { market: "Panda - 191 - AlQirawan", name: "Mustafa", phone: "+966566744404" },
+  { market: "Carrefour - Tala Mall", name: "Mustafa", phone: "+966566744404" },
+  { market: "Carrefour - Riyadh Park", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 10 Wholesale - Marooj", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 7 - Al Moroj", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 15 - Arouba Olaya", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 20 - Al Wzarat", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 113 - Main Street Daryya", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 157 - Riyadh", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 148 - Al Nafel", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 156 - Riyadh", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 194 - Riyadh", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 128 - Riyadh", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 395 - Hrimlah Riyadh", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 488 - Durma", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 783 - Riyadh", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 803 - Alsalmaniya", name: "Mustafa", phone: "+966566744404" },
+  { market: "Othaim - 802 - King Fahd dist", name: "Mustafa", phone: "+966566744404" },
+  { market: "Tamimi - 131 - King Fahad St.", name: "Mustafa", phone: "+966566744404" },
+  { market: "Tamimi - 136 - Al Dabab", name: "Mustafa", phone: "+966566744404" },
+  { market: "Tamimi - 134 - Al Nazha Miqrin Road", name: "Mustafa", phone: "+966566744404" },
+  { market: "Tamimi - 159 - King Abdulaziz St.", name: "Mustafa", phone: "+966566744404" },
+  { market: "Sadhan - 20 - Olaya", name: "Mustafa", phone: "+966566744404" },
+  { market: "Damam AlQuds St Prince Muhammad bin Soud", name: "Mustafa", phone: "+966566744404" },
+  { market: "Sadhan - 110 - Moroj", name: "Mustafa", phone: "+966566744404" },
+  { market: "Jeddah Bawadi Sari St With 60 St", name: "Mustafa", phone: "+966566744404" },
+  { market: "Lulu Avenue Mall", name: "Mustafa", phone: "+966566744404" },
+  { market: "Lulu Express - Sahara Mall", name: "Mustafa", phone: "+966566744404" },
+  // Mohammed Ismail
+  { market: "Danube - Rawabi", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 28 - Rabwa", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 19 - Riyadh", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 9 - Rabwa", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 22 - Riyadh", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 2 - Al Thubat", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 8 - Al Suli", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 83 - Al Nassem", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 120 - Riyadh", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 115 - Riyadh", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 110 - Riyadh", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 102 - Riyadh", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 106 - Al Rayyan", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 107 - Riyadh", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 123 - Riyadh", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 124 - Riyadh", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 97 - Al Nassem", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 154 - Rabwa", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 189 - Al Suli", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 116 - Riyadh", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 122 - Al Nassem", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 190 - Riyadh", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 192 - Al Nassem", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 329 - Al Malaz", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 368 - Jeddah Sahar St", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 765 - Hasan Ibn Thabit St Nasim", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 393 - AlSalam Plaza", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Othaim - 849 - KAMC", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Tamimi - 140 - Rabwa", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Tamimi - 151 - Al Malaz University St", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Tamimi - 163 - AlMalaz AlAhsa St", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Tamimi - 111 - Khurais", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Tamimi - 141 - Khurais", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Omar Bin Abdul Aziz Branch Road Rabwah", name: "Mohammed Ismail", phone: "+966542948276" },
+  { market: "Lulu Al Malaz", name: "Mohammed Ismail", phone: "+966542948276" },
+];
+
+function normalize(s) {
+  return s.toLowerCase().replace(/[\s\-]+/g, ' ').trim();
+}
+
+function findRep(market) {
+  const nm = normalize(market);
+  return reps.find(r => normalize(r.market) === nm) || null;
+}
+
+function phoneRow(p) {
+  if (!p) return `<span style="color:#ccc;font-size:.82rem">غير متوفر</span>`;
+  const clean = p.replace(/\s/g,'');
+  return `<span class="phone">${p}</span>
+    <a class="wa-btn" href="https://wa.me/${clean.replace('+','')}" target="_blank">💬 واتساب</a>`;
+}
+
+function search() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const container = document.getElementById('results');
+  if (!q) {
+    container.innerHTML = `<div class="hint"><span>🔍</span>${t('hintText')}</div>`;
+    return;
+  }
+  const matches = promoters.filter(d => d.market.toLowerCase().includes(q));
+  if (!matches.length) {
+    container.innerHTML = `<div class="no-result"><span>😕</span>${t('noResult')}: "<strong>${document.getElementById('searchInput').value}</strong>"</div>`;
+    return;
+  }
+  const todayOrders = loadOrders();
+  container.innerHTML = `<div class="count-bar">${matches.length} نتيجة</div>` + matches.map(d => {
+    const rep = findRep(d.market);
+    const order = todayOrders.find(o => normalize(o.market) === normalize(d.market));
+    const dWa = order ? order.driver.replace(/\D/g,'').replace(/^0/,'966') : '';
+    return `<div class="card">
+      <div class="market-name">🏪 ${d.market}${order ? ' <span style="background:#e6f9ee;color:#166534;font-size:.72rem;border-radius:6px;padding:2px 8px;font-weight:bold">📦 طلب اليوم</span>' : ''}</div>
+      ${order ? `<div style="background:#f0fdf4;border-radius:10px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:.8rem;font-weight:bold;color:#166534">🚗 السائق:</span>
+        <span class="phone">${order.driver}</span>
+        <a class="wa-btn" href="https://wa.me/${dWa}" target="_blank">💬 واتساب</a>
+      </div>` : ''}
+      <div class="section">
+        <div class="section-title" data-i18n="sectionPromoter">👤 المروّج</div>
+        <div class="row">
+          <span class="tag">${d.name}</span>
+          <span class="tag gold">${d.source}</span>
+        </div>
+        <div class="row" style="margin-top:8px">${phoneRow(d.phone)}</div>
+      </div>
+      <hr class="divider">
+      <div class="section">
+        <div class="section-title" data-i18n="sectionRep">🤝 المندوب</div>
+        ${rep
+          ? `<div class="row"><span class="tag green">${rep.name}</span></div>
+             <div class="row" style="margin-top:8px">${phoneRow(rep.phone)}</div>`
+          : `<div class="row"><span style="color:#ccc;font-size:.82rem">لا يوجد مندوب مسجّل لهذا السوق</span></div>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  search();
+  document.getElementById('searchInput').focus();
+}
+
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Escape') clearSearch();
+});
+
+// ============================================================
+//  قسم الطلبيات
+// ============================================================
+
+// ============================================================
+//  نظام اللغات
+// ============================================================
+const translations = {
+  ar: {
+    headerTitle:      'نظام البحث عن مروّجي ومناديب المبيعات',
+    searchPlaceholder:'ابحث باسم السوق... مثال: Panda 100',
+    tabPromoter:      '👤 أنا منشط',
+    tabAdmin:         '⚙️ إدارة الطلبيات',
+    tabHistory:       '🗂 الأرشيف',
+    ordersTitle:      '📦 طلبيات اليوم',
+    promoterLabel:    '🔍 ابحث باسمك',
+    promoterPH:       'اكتب اسمك...',
+    passLabel:        'كلمة المرور',
+    passBtn:          'دخول ⚡',
+    importLabel:      '⚡ استيراد سريع بكود',
+    importPH:         'الصق الكود هنا...',
+    importBtn:        '⚡ استيراد الطلبيات',
+    addLabel:         '➕ إضافة يدوية',
+    addBtn:           'إضافة طلب',
+    driverPH:         '+966 5XX XXX XXX',
+    clearAll:         '🗑 مسح الكل',
+    todayOrders:      '📋 الطلبيات المدخلة اليوم',
+    absentTitle:      '🚨 توزيع عند الغياب',
+    absentPH:         '-- اختر المروّج الغائب --',
+    absentBtn:        '📋 عرض التوزيع المقترح',
+    confirmDist:      '✅ تأكيد التوزيع وإرسال للمروّجين',
+    histPassLabel:    'كلمة المرور للدخول للأرشيف',
+    histSearchPH:     'اسم المروّج أو اسم السوق...',
+    histDateLabel:    '📅 بحث بالتاريخ',
+    deleteArchive:    '🗑 حذف الأرشيف كاملاً',
+    sectionPromoter:  '👤 المروّج',
+    sectionRep:       '🤝 المندوب',
+    sectionDriver:    '🚗 السائق',
+    waBtn:            '💬 واتساب',
+    noResult:         'لا توجد نتائج',
+    hintText:         'ابدأ بكتابة اسم السوق للبحث',
+    todayOrder:       '📦 طلب اليوم',
+    reassigned:       '🔄 مُحوَّل إليك',
+    noOrders:         'لا توجد طلبيات لك اليوم',
+    selectName:       'اكتب اسمك لتظهر طلبياتك',
+    marketSelect:     '-- اختر السوق --',
+    tabDriver:        '🚗 أنا سائق',
+    driverLabel:      '🔍 أدخل رقم جوالك',
+    driverHint:       'أدخل رقمك لتظهر طلباتك',
+    driverNoOrders:   'لا توجد طلبات بهذا الرقم اليوم',
+    driverTotalOrders:'إجمالي طلباتك اليوم',
+    driverOrderCount: 'طلب',
+    noPhone:          'غير متوفر',
+    dir: 'rtl'
+  },
+  en: {
+    headerTitle:      'Promoter & Sales Rep Search System',
+    searchPlaceholder:'Search market name... e.g. Panda 100',
+    tabPromoter:      '👤 I\'m a Promoter',
+    tabAdmin:         '⚙️ Manage Orders',
+    tabHistory:       '🗂 Archive',
+    ordersTitle:      '📦 Today\'s Orders',
+    promoterLabel:    '🔍 Search your name',
+    promoterPH:       'Type your name...',
+    passLabel:        'Password',
+    passBtn:          'Login ⚡',
+    importLabel:      '⚡ Quick Import by Code',
+    importPH:         'Paste the code here...',
+    importBtn:        '⚡ Import Orders',
+    addLabel:         '➕ Manual Add',
+    addBtn:           'Add Order',
+    driverPH:         '+966 5XX XXX XXX',
+    clearAll:         '🗑 Clear All',
+    todayOrders:      '📋 Today\'s Orders List',
+    absentTitle:      '🚨 Absence Distribution',
+    absentPH:         '-- Select Absent Promoter --',
+    absentBtn:        '📋 View Suggested Distribution',
+    confirmDist:      '✅ Confirm & Notify Promoters',
+    histPassLabel:    'Password to Access Archive',
+    histSearchPH:     'Promoter name or market name...',
+    histDateLabel:    '📅 Search by Date',
+    deleteArchive:    '🗑 Delete Entire Archive',
+    sectionPromoter:  '👤 Promoter',
+    sectionRep:       '🤝 Sales Rep',
+    sectionDriver:    '🚗 Driver',
+    waBtn:            '💬 WhatsApp',
+    noResult:         'No results found',
+    hintText:         'Start typing a market name to search',
+    todayOrder:       '📦 Order Today',
+    reassigned:       '🔄 Transferred to You',
+    noOrders:         'No orders for you today',
+    selectName:       'Type your name to see your orders',
+    marketSelect:     '-- Select Market --',
+    tabDriver:        '🚗 I\'m a Driver',
+    driverLabel:      '🔍 Enter your phone number',
+    driverHint:       'Enter your number to see your orders',
+    driverNoOrders:   'No orders for this number today',
+    driverTotalOrders:'Your total orders today',
+    driverOrderCount: 'orders',
+    noPhone:          'Not available',
+    dir: 'ltr'
+  },
+  ur: {
+    headerTitle:      'پروموٹر اور سیلز نمائندہ سرچ سسٹم',
+    searchPlaceholder:'مارکیٹ کا نام تلاش کریں... مثلاً Panda 100',
+    tabPromoter:      '👤 میں پروموٹر ہوں',
+    tabAdmin:         '⚙️ آرڈر مینجمنٹ',
+    tabHistory:       '🗂 آرکائیو',
+    ordersTitle:      '📦 آج کے آرڈر',
+    promoterLabel:    '🔍 اپنا نام تلاش کریں',
+    promoterPH:       'اپنا نام لکھیں...',
+    passLabel:        'پاس ورڈ',
+    passBtn:          'داخل ہوں ⚡',
+    importLabel:      '⚡ کوڈ سے فوری درآمد',
+    importPH:         'کوڈ یہاں پیسٹ کریں...',
+    importBtn:        '⚡ آرڈر درآمد کریں',
+    addLabel:         '➕ دستی اضافہ',
+    addBtn:           'آرڈر شامل کریں',
+    driverPH:         '+966 5XX XXX XXX',
+    clearAll:         '🗑 سب حذف کریں',
+    todayOrders:      '📋 آج کے آرڈر کی فہرست',
+    absentTitle:      '🚨 غیر حاضری پر تقسیم',
+    absentPH:         '-- غیر حاضر پروموٹر منتخب کریں --',
+    absentBtn:        '📋 تجویز کردہ تقسیم دیکھیں',
+    confirmDist:      '✅ تقسیم کی تصدیق کریں',
+    histPassLabel:    'آرکائیو تک رسائی کا پاس ورڈ',
+    histSearchPH:     'پروموٹر یا مارکیٹ کا نام...',
+    histDateLabel:    '📅 تاریخ سے تلاش',
+    deleteArchive:    '🗑 پورا آرکائیو حذف کریں',
+    sectionPromoter:  '👤 پروموٹر',
+    sectionRep:       '🤝 سیلز نمائندہ',
+    sectionDriver:    '🚗 ڈرائیور',
+    waBtn:            '💬 واٹس ایپ',
+    noResult:         'کوئی نتیجہ نہیں ملا',
+    hintText:         'مارکیٹ کا نام لکھ کر تلاش کریں',
+    todayOrder:       '📦 آج کا آرڈر',
+    reassigned:       '🔄 آپ کو منتقل کیا گیا',
+    noOrders:         'آج آپ کے لیے کوئی آرڈر نہیں',
+    selectName:       'اپنا نام لکھیں تاکہ آرڈر ظاہر ہوں',
+    marketSelect:     '-- مارکیٹ منتخب کریں --',
+    tabDriver:        '🚗 میں ڈرائیور ہوں',
+    driverLabel:      '🔍 اپنا موبائل نمبر درج کریں',
+    driverHint:       'اپنا نمبر لکھیں تاکہ آرڈر ظاہر ہوں',
+    driverNoOrders:   'آج اس نمبر پر کوئی آرڈر نہیں',
+    driverTotalOrders:'آج آپ کے کل آرڈر',
+    driverOrderCount: 'آرڈر',
+    noPhone:          'دستیاب نہیں',
+    dir: 'rtl'
+  }
+};
+
+let currentLang = 'ar';
+
+function t(key) { return translations[currentLang][key] || translations['ar'][key] || key; }
+
+function setLang(lang) {
+  currentLang = lang;
+  // اتجاه الصفحة
+  document.documentElement.dir = translations[lang].dir;
+  document.documentElement.lang = lang;
+  // أزرار اللغة
+  document.querySelectorAll('.lang-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['ar','en','ur'][i] === lang);
+  });
+  // تحديث النصوص
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t(key)) el.textContent = t(key);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (t(key)) el.placeholder = t(key);
+  });
+  // تحديث نصوص ديناميكية
+  const proLabel = document.querySelector('.promoter-input-box .input-label');
+  if (proLabel) proLabel.textContent = t('promoterLabel');
+  const proInput = document.getElementById('promoterSearchInput');
+  if (proInput) proInput.placeholder = t('promoterPH');
+  // أعد رسم الهينت
+  const res = document.getElementById('results');
+  if (res && res.querySelector('.hint')) {
+    res.innerHTML = `<div class="hint"><span>🔍</span>${t('hintText')}</div>`;
+  }
+  const proOrders = document.getElementById('promoterOrders');
+  if (proOrders && proOrders.querySelector('.empty-orders')) {
+    proOrders.innerHTML = `<div class="empty-orders"><span>📋</span>${t('selectName')}</div>`;
+  }
+}
+
+const ADMIN_PASS = '543543';
+const ORDERS_KEY = 'mayar_orders';
+const ARCHIVE_KEY = 'mayar_archive';
+const TODAY = new Date().toDateString();
+
+// ============================================================
+//  Firebase — مزامنة فورية بين كل الأجهزة
+// ============================================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBG8GAcRbo9elPUpcFkh6feOyJROnojvFM",
+  authDomain: "mayar-orders.firebaseapp.com",
+  projectId: "mayar-orders",
+  storageBucket: "mayar-orders.firebasestorage.app",
+  messagingSenderId: "617339826961",
+  appId: "1:617339826961:web:47321a1fba921f6bbad2b0",
+  measurementId: "G-8XR47N8GZD"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+const ordersRef = doc(db, "orders", "today");
+
+// رفع الطلبات لـ Firebase
+async function syncToFirebase(orders) {
+  try {
+    await setDoc(ordersRef, { date: TODAY, orders, updatedAt: Date.now() });
+  } catch(e) { console.warn("Firebase sync error:", e); }
+}
+
+// مراقبة التغييرات الفورية من Firebase
+onSnapshot(ordersRef, (snap) => {
+  if (!snap.exists()) return;
+  const data = snap.data();
+  if (data.date === TODAY && data.orders) {
+    // حفّظ في localStorage وحدّث الواجهة
+    localStorage.setItem(ORDERS_KEY, JSON.stringify({ date: TODAY, orders: data.orders }));
+    updateCount(data.orders);
+    refreshOrdersUI();
+    showPromoterOrders();
+    showDriverOrders();
+  }
+});
+// تنسيق التاريخ العربي
+function formatDateAr(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('ar-SA', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+}
+
+// قائمة المنشطين (للبحث)
+const allPromoterNames = [...new Set(promoters.map(p => p.name))].sort();
+let selectedPromoter = '';
+
+// --- تهيئة قوائم الأسواق ---
+function initOrders() {
+  const sel = document.getElementById('orderMarketSelect');
+  const allMarkets = [...new Set(promoters.map(p => p.market))].sort();
+  allMarkets.forEach(m => {
+    const o = document.createElement('option');
+    o.value = m; o.textContent = m;
+    sel.appendChild(o);
+  });
+  refreshOrdersUI();
+}
+
+// --- بحث اسم المنشط بالكتابة ---
+function filterPromoterList() {
+  const q = document.getElementById('promoterSearchInput').value.trim().toLowerCase();
+  const dd = document.getElementById('promoterDropdown');
+  selectedPromoter = '';
+  document.getElementById('promoterOrders').innerHTML = '<div class="empty-orders"><span>📋</span>اكتب اسمك لتظهر طلبياتك</div>';
+
+  if (!q) { dd.style.display = 'none'; return; }
+
+  const matches = allPromoterNames.filter(n => n.toLowerCase().includes(q));
+  if (!matches.length) {
+    dd.innerHTML = '<div style="padding:12px;color:#aaa;font-size:.85rem;text-align:center">لا توجد نتيجة</div>';
+    dd.style.display = 'block';
+    return;
+  }
+  dd.innerHTML = matches.map(n =>
+    `<div onclick="selectPromoter('${n.replace(/'/g,"\\'")}');"
+      style="padding:11px 14px;cursor:pointer;font-size:.9rem;border-bottom:1px solid #f0ebff;transition:background .15s"
+      onmouseover="this.style.background='#f7f3ff'" onmouseout="this.style.background=''">${n}</div>`
+  ).join('');
+  dd.style.display = 'block';
+}
+
+function selectPromoter(name) {
+  selectedPromoter = name;
+  document.getElementById('promoterSearchInput').value = name;
+  document.getElementById('promoterDropdown').style.display = 'none';
+  showPromoterOrders();
+}
+
+// أغلق القائمة عند الضغط خارجها
+document.addEventListener('click', e => {
+  if (!e.target.closest('.promoter-input-box')) {
+    document.getElementById('promoterDropdown').style.display = 'none';
+  }
+});
+
+// --- تحميل وحفظ الطلبيات ---
+function loadOrders() {
+  const raw = localStorage.getItem(ORDERS_KEY);
+  if (!raw) return [];
+  try {
+    const data = JSON.parse(raw);
+    // إذا البيانات من يوم سابق → احفظها في الأرشيف أولاً ثم امسحها
+    if (data.date !== TODAY) {
+      if (data.orders && data.orders.length > 0) archiveDay(data.date, data.orders);
+      localStorage.removeItem(ORDERS_KEY);
+      return [];
+    }
+    return data.orders || [];
+  } catch { return []; }
+}
+
+// --- حفظ يوم في الأرشيف ---
+function archiveDay(date, orders) {
+  const archive = loadArchive();
+  // لا تكرر نفس اليوم
+  if (!archive.find(d => d.date === date)) {
+    // أضف اسم المروّج لكل طلب
+    const enriched = orders.map(o => {
+      const pr = promoters.find(p => p.market === o.market);
+      return { ...o, promoter: pr ? pr.name : '—' };
+    });
+    archive.unshift({ date, orders: enriched });
+    localStorage.setItem(ARCHIVE_KEY, JSON.stringify(archive));
+  }
+}
+
+function loadArchive() {
+  try { return JSON.parse(localStorage.getItem(ARCHIVE_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveOrders(orders) {
+  localStorage.setItem(ORDERS_KEY, JSON.stringify({ date: TODAY, orders }));
+  syncToFirebase(orders); // رفع فوري لـ Firebase
+}
+
+// --- تحديث العداد ---
+function updateCount(orders) {
+  document.getElementById('ordersCount').textContent = orders.length + ' طلب';
+}
+
+// --- إضافة طلب ---
+function addOrder() {
+  const market = document.getElementById('orderMarketSelect').value;
+  const driver = document.getElementById('driverPhone').value.trim();
+  if (!market) { alert('اختر السوق أولاً'); return; }
+  if (!driver) { alert('أدخل رقم السائق'); return; }
+
+  const orders = loadOrders();
+  if (orders.find(o => o.market === market)) {
+    alert('هذا السوق مضاف مسبقاً'); return;
+  }
+  orders.push({ market, driver });
+  saveOrders(orders);
+  document.getElementById('orderMarketSelect').value = '';
+  document.getElementById('driverPhone').value = '';
+  refreshOrdersUI();
+}
+
+// --- حذف طلب واحد ---
+function deleteOrder(market) {
+  const orders = loadOrders().filter(o => o.market !== market);
+  saveOrders(orders);
+  refreshOrdersUI();
+  showPromoterOrders();
+}
+
+// --- مسح الكل (مع حفظ في الأرشيف) ---
+function clearAllOrders() {
+  if (!confirm('مسح جميع الطلبيات؟ ستُحفظ في الأرشيف تلقائياً')) return;
+  const orders = loadOrders();
+  if (orders.length > 0) archiveDay(TODAY, orders);
+  localStorage.removeItem(ORDERS_KEY);
+  refreshOrdersUI();
+  showPromoterOrders();
+}
+
+// --- تحديث واجهة الإدارة ---
+function refreshOrdersUI() {
+  const orders = loadOrders();
+  updateCount(orders);
+  const container = document.getElementById('adminOrdersList');
+  if (!orders.length) {
+    container.innerHTML = '<div class="empty-orders"><span>📭</span>لا توجد طلبيات بعد</div>';
+    return;
+  }
+  container.innerHTML = orders.map(o => `
+    <div class="order-item">
+      <span class="order-market">${o.market}</span>
+      <span class="order-driver">${o.driver}</span>
+      <button class="btn-danger" onclick="deleteOrder('${o.market.replace(/'/g,"\\'")}')">✕</button>
+    </div>
+  `).join('');
+}
+
+// --- عرض طلبيات المنشط ---
+function showPromoterOrders() {
+  const name = selectedPromoter;
+  const container = document.getElementById('promoterOrders');
+  if (!name) {
+    container.innerHTML = `<div class="empty-orders"><span>📋</span>${t('selectName')}</div>`;
+    return;
+  }
+  const orders = loadOrders();
+  const myMarkets = promoters.filter(p => p.name === name).map(p => p.market);
+  // أسواقه الأصلية + الأسواق المُعاد توزيعها عليه
+  const myOrders = orders.filter(o =>
+    myMarkets.some(m => normalize(m) === normalize(o.market)) ||
+    o.reassignedTo === name
+  );
+
+  if (!myOrders.length) {
+    container.innerHTML = `<div class="empty-orders"><span>✅</span>${t('noOrders')} — ${name}</div>`;
+    return;
+  }
+
+  container.innerHTML = `<p style="font-size:.8rem;color:#8B5CF6;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px"><span style="width:4px;height:16px;background:#C9A327;border-radius:2px;display:inline-block"></span>${myOrders.length} طلب اليوم</p>` +
+  myOrders.map(o => {
+    const dClean = o.driver.replace(/\D/g, '');
+    const dWa = dClean.startsWith('0') ? '966' + dClean.slice(1) : dClean;
+    const isReassigned = o.reassignedTo === name;
+    return `
+    <div class="order-card" style="${isReassigned ? 'border-right-color:#f59e0b;background:#fffdf0' : ''}">
+      <div class="order-card-market">🏪 ${o.market}
+        ${isReassigned ? '<span style="background:#fef3c7;color:#92400e;font-size:.7rem;border-radius:6px;padding:2px 7px;margin-right:6px;font-weight:bold">🔄 مُحوَّل إليك</span>' : ''}
+      </div>
+      <div class="driver-row">
+        <span class="driver-tag">${t('sectionDriver')}</span>
+        <span class="phone">${o.driver}</span>
+        <a class="wa-btn" href="https://wa.me/${dWa}" target="_blank">${t('waBtn')}</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// --- تبديل التبويبات ---
+function switchTab(tab) {
+  const tabs = ['promoter','driver','admin','history'];
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', tabs[i] === tab);
+  });
+  document.getElementById('promoterPanel').classList.toggle('show', tab === 'promoter');
+  document.getElementById('driverPanel').classList.toggle('show', tab === 'driver');
+  document.getElementById('adminPanel').classList.toggle('show', tab === 'admin');
+  document.getElementById('historyPanel').classList.toggle('show', tab === 'history');
+  // لما يفتح تبويب السائق، نفّذ البحث مباشرة إذا في رقم
+  if (tab === 'driver' && document.getElementById('driverSearchInput').value.length > 6) {
+    showDriverOrders();
+  }
+}
+
+// --- فتح الأرشيف بكلمة مرور ---
+function unlockHistory() {
+  const pass = document.getElementById('historyPass').value;
+  if (pass === ADMIN_PASS) {
+    document.getElementById('historyLockScreen').style.display = 'none';
+    document.getElementById('historyContent').style.display = 'block';
+    searchHistory();
+  } else {
+    document.getElementById('historyPassError').style.display = 'block';
+  }
+}
+document.getElementById('historyPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') unlockHistory();
+});
+
+// --- بحث في الأرشيف ---
+function searchHistory() {
+  const q = document.getElementById('historySearchInput').value.trim().toLowerCase();
+  const dateQ = document.getElementById('historyDateInput').value; // YYYY-MM-DD
+  const archive = loadArchive();
+
+  let results = archive;
+
+  // فلتر التاريخ
+  if (dateQ) {
+    const target = new Date(dateQ).toDateString();
+    results = results.filter(d => new Date(d.date).toDateString() === target);
+  }
+
+  // فلتر النص (مروّج أو سوق)
+  if (q) {
+    results = results.map(d => ({
+      ...d,
+      orders: d.orders.filter(o =>
+        o.market.toLowerCase().includes(q) ||
+        (o.promoter && o.promoter.toLowerCase().includes(q))
+      )
+    })).filter(d => d.orders.length > 0);
+  }
+
+  renderHistory(results);
+}
+
+// --- رسم نتائج الأرشيف ---
+function renderHistory(results) {
+  const container = document.getElementById('historyResults');
+  if (!results.length) {
+    container.innerHTML = '<div class="empty-orders"><span>🗂</span>لا توجد نتائج</div>';
+    return;
+  }
+  container.innerHTML = results.map((day, di) => `
+    <div class="archive-day">
+      <div class="archive-day-header" onclick="toggleArchiveDay(${di})">
+        <span class="archive-date">📅 ${formatDateAr(day.date)}</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="archive-count">${day.orders.length} طلب</span>
+          <span class="archive-toggle" id="toggle-${di}">▼</span>
+        </div>
+      </div>
+      <div class="archive-body" id="archiveBody-${di}">
+        ${day.orders.map(o => `
+          <div class="archive-item">
+            <div class="archive-market">🏪 ${o.market}</div>
+            <div class="archive-meta">
+              <span class="archive-promoter">👤 ${o.promoter || '—'}</span>
+              <span class="archive-driver">🚗 ${o.driver}</span>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleArchiveDay(di) {
+  const body = document.getElementById('archiveBody-' + di);
+  const tog = document.getElementById('toggle-' + di);
+  const open = body.classList.toggle('open');
+  tog.textContent = open ? '▲' : '▼';
+}
+
+// --- استيراد من كود ---
+function importFromCode() {
+  const raw = document.getElementById('importCode').value.trim();
+  if (!raw) { showImportMsg('الصق الكود أولاً', 'red'); return; }
+  try {
+    const data = JSON.parse(raw);
+    const orders = loadOrders();
+    let added = 0, skipped = 0;
+
+    // الصيغة الجديدة: مصفوفة [{market, driver}, ...]
+    const items = Array.isArray(data) ? data : [];
+    if (!items.length) throw new Error();
+
+    items.forEach(item => {
+      if (!item.market || !item.driver) return;
+      if (!orders.find(o => o.market === item.market)) {
+        orders.push({ market: item.market, driver: item.driver });
+        added++;
+      } else { skipped++; }
+    });
+
+    saveOrders(orders);
+    refreshOrdersUI();
+    showPromoterOrders();
+    document.getElementById('importCode').value = '';
+    let txt = `✅ تم إضافة ${added} طلب`;
+    if (skipped) txt += ` (${skipped} مكرر تجاهله)`;
+    showImportMsg(txt, 'green');
+  } catch {
+    showImportMsg('❌ الكود غير صحيح، تأكد من نسخه كاملاً', 'red');
+  }
+}
+function showImportMsg(txt, color) {
+  const el = document.getElementById('importMsg');
+  el.textContent = txt;
+  el.style.color = color === 'green' ? '#166534' : '#c00';
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+
+// --- فتح لوحة الإدارة بكلمة مرور ---
+function unlockAdmin() {
+  const pass = document.getElementById('adminPass').value;
+  if (pass === ADMIN_PASS) {
+    document.getElementById('adminLockScreen').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'block';
+    refreshOrdersUI();
+  } else {
+    document.getElementById('passError').style.display = 'block';
+  }
+}
+
+document.getElementById('adminPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') unlockAdmin();
+});
+
+// ============================================================
+//  نظام الغياب والتوزيع الذكي
+// ============================================================
+
+const promoterRegions = {
+  // وسط
+  'Ali Al-Azzani':'وسط','Adeem Abu Bakr':'وسط','Amjad Khan':'وسط',
+  'Saleh Bahlwan':'وسط','Yonatan Milak':'وسط','Ali Allaf':'وسط',
+  'Mohamed Fairouz':'وسط','Amaar Slama Mohammed':'وسط','Ahmed Al Saad':'وسط',
+  'Mohammed Thunayyaii':'وسط','Yunus Muhammad':'وسط',
+  // شمال
+  'Salem Bakr':'شمال','Asif Muhammad':'شمال','Taha Omar':'شمال',
+  'Abdulaziz Alharbi':'شمال','Turki Al-Mahaya':'شمال','Ahmed Mohamed':'شمال',
+  'Osama Edress':'شمال','KANWAL FEROZ':'شمال',
+  // شرق
+  'Raheel Alenizi':'شرق','Ahmed Hazazi':'شرق','Lafi Alharbi':'شرق',
+  'Ghalib':'شرق','Usman Sadaqat Ali':'شرق','Fahad Abu Baker':'شرق',
+  'Mohammed Shaheen':'شرق','Hussein Ali':'شرق','Khader Muhammad':'شرق',
+  'Qasim Ali':'شرق','Parwez':'شرق',
+  // غرب
+  'Waleed Ali':'غرب','Najeeb Saeed Munssir':'غرب','Mazen Abdel Razzak':'غرب',
+  'Nayaf Nuzhah':'غرب','Naif Futayni':'غرب','Saleh Shamlan':'غرب',
+  'Anwar Zino Said':'غرب',
+  // جنوب
+  'Ayaman Abu Baker':'جنوب','Ahmed Talb':'جنوب','Mohammed Mohasan Bayts':'جنوب',
+  'Yahaya Al Sybyani':'جنوب','Ibrahim Saleh':'جنوب','Mohammed Farj':'جنوب',
+  'Abdullah Al Dersy':'جنوب',
+  // الخرج
+  'Muhannad Khalil':'الخرج','Abzir Musa':'الخرج','Abdallah Mohamed':'الخرج'
+};
+
+const regionProximity = {
+  'وسط' : ['شمال','شرق','غرب','جنوب'],
+  'شمال': ['وسط','شرق','غرب'],
+  'شرق' : ['شمال','وسط','جنوب'],
+  'غرب' : ['وسط','جنوب','شمال'],
+  'جنوب': ['غرب','وسط','شرق','الخرج'],
+  'الخرج':['جنوب','وسط']
+};
+
+const ABSENT_KEY = 'mayar_absent';
+
+function loadAbsent() {
+  try { const d = JSON.parse(localStorage.getItem(ABSENT_KEY)||'{}'); return d.date===TODAY ? (d.absent||[]) : []; } catch { return []; }
+}
+function saveAbsent(list) {
+  localStorage.setItem(ABSENT_KEY, JSON.stringify({date:TODAY, absent:list}));
+}
+
+// كلمات الأحياء من اسم السوق
+function extractKeywords(market) {
+  const stop = ['panda','othaim','tamimi','danube','farm','stores','lulu','carrefour','sadhan','spinneys','spar','nesto','ramez','a-market','lulu','hypermarket','supermarket','express','mall','hyper'];
+  return market.toLowerCase().split(/[\s\-,]+/)
+    .filter(w => w.length > 2 && !stop.includes(w) && !/^\d+$/.test(w));
+}
+
+function keywordOverlap(m1, m2) {
+  const k1 = extractKeywords(m1), k2 = extractKeywords(m2);
+  return k1.filter(w => k2.includes(w)).length;
+}
+
+// أفضل مروّج بديل لسوق معين
+function findBestReplacement(market, absentName, todayOrders, absentList) {
+  const absentRegion = promoterRegions[absentName] || 'وسط';
+  const regionsToTry = [absentRegion, ...(regionProximity[absentRegion]||[])];
+  const todayCount = {}; // عدد الطلبات لكل مروّج اليوم
+  todayOrders.forEach(o => {
+    const pr = promoters.find(p => p.market === o.market);
+    if (pr) todayCount[pr.name] = (todayCount[pr.name]||0) + 1;
+  });
+
+  for (const region of regionsToTry) {
+    const candidates = Object.entries(promoterRegions)
+      .filter(([name, reg]) => reg === region && name !== absentName && !absentList.includes(name))
+      .map(([name]) => name);
+
+    if (!candidates.length) continue;
+
+    // أسواق كل مروّج
+    const scored = candidates.map(name => {
+      const theirMarkets = promoters.filter(p => p.name === name).map(p => p.market);
+      const overlap = Math.max(...theirMarkets.map(m => keywordOverlap(market, m)), 0);
+      const load = todayCount[name] || 0;
+      return { name, score: overlap * 10 - load, region };
+    });
+
+    scored.sort((a,b) => b.score - a.score);
+    return scored[0];
+  }
+  return null;
+}
+
+// عرض التوزيع المقترح
+function showDistribution() {
+  const absent = document.getElementById('absentPromoterSelect').value;
+  const container = document.getElementById('distributionResult');
+  if (!absent) { container.innerHTML = '<p style="color:#c00;font-size:.82rem;margin-bottom:10px">اختر المروّج الغائب أولاً</p>'; return; }
+
+  const orders = loadOrders();
+  const absentList = [absent];
+  const absentMarkets = promoters.filter(p => p.name === absent).map(p => p.market);
+  const absentOrders = orders.filter(o => absentMarkets.some(m => normalize(m) === normalize(o.market)));
+
+  if (!absentOrders.length) {
+    container.innerHTML = '<div class="empty-orders"><span>✅</span>لا توجد طلبيات لهذا المروّج اليوم</div>';
+    return;
+  }
+
+  const suggestions = absentOrders.map(o => ({
+    order: o,
+    suggestion: findBestReplacement(o.market, absent, orders, absentList)
+  }));
+
+  const absentRegion = promoterRegions[absent] || '—';
+  const availablePromoters = Object.keys(promoterRegions).filter(n => n !== absent);
+
+  container.innerHTML = `
+    <div style="background:#fef3c7;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:.82rem;color:#92400e">
+      <strong>🚨 ${absent}</strong> <span class="absent-badge">غائب</span>
+      <span class="region-badge region-${absentRegion}" style="margin-right:6px">${absentRegion}</span>
+      — ${absentOrders.length} طلب تحتاج توزيع
+    </div>
+    ${suggestions.map((s,i) => {
+      const sug = s.suggestion;
+      const sugRegion = sug ? promoterRegions[sug.name]||'' : '';
+      const isSameRegion = sug && sug.region === absentRegion;
+      return `<div class="dist-card">
+        <div class="dist-market">🏪 ${s.order.market}</div>
+        <div class="dist-row">
+          <span style="font-size:.8rem;color:#666">يُوزَّع على:</span>
+          <span class="dist-arrow">→</span>
+          <select class="dist-select" id="dist_${i}">
+            ${availablePromoters.map(n => {
+              const r = promoterRegions[n]||'';
+              return `<option value="${n}" ${sug && n===sug.name ? 'selected' : ''}>${n} (${r})</option>`;
+            }).join('')}
+          </select>
+          ${sug ? `<span class="region-badge region-${sugRegion}">${isSameRegion ? '✅ نفس المنطقة' : '↗ أقرب متاح'}</span>` : ''}
+        </div>
+      </div>`;
+    }).join('')}
+    <button class="btn-confirm" onclick="confirmDistribution(${JSON.stringify(absentOrders.map((_,i)=>i))}, '${absent}')">
+      ✅ تأكيد التوزيع وإرسال للمروّجين
+    </button>`;
+}
+
+// تأكيد التوزيع وحفظه
+function confirmDistribution(indices, absent) {
+  const orders = loadOrders();
+  indices.forEach(i => {
+    const sel = document.getElementById('dist_' + i);
+    if (!sel) return;
+    const newPromoter = sel.value;
+    const marketName = sel.closest('.dist-card').querySelector('.dist-market').textContent.replace('🏪 ','').trim();
+    const order = orders.find(o => normalize(o.market) === normalize(marketName));
+    if (order) order.reassignedTo = newPromoter;
+  });
+  saveOrders(orders);
+  // حفظ الغياب
+  const absentList = loadAbsent();
+  if (!absentList.includes(absent)) absentList.push(absent);
+  saveAbsent(absentList);
+  document.getElementById('distributionResult').innerHTML =
+    '<div class="empty-orders" style="color:#15803d"><span>✅</span>تم التوزيع! المروّجون سيرون أسواقهم الجديدة</div>';
+  showPromoterOrders();
+}
+
+// تهيئة قائمة الغياب
+function initAbsence() {
+  const sel = document.getElementById('absentPromoterSelect');
+  Object.keys(promoterRegions).sort().forEach(n => {
+    const o = document.createElement('option');
+    o.value = n; o.textContent = `${n} (${promoterRegions[n]})`;
+    sel.appendChild(o);
+  });
+}
+
+// ============================================================
+//  لوحة السائق
+// ============================================================
+function normalizePhone(p) {
+  return p.replace(/\D/g,'').replace(/^966/,'0').replace(/^00966/,'0');
+}
+
+function showDriverOrders() {
+  const input = document.getElementById('driverSearchInput').value.trim();
+  const container = document.getElementById('driverOrders');
+
+  if (input.length < 7) {
+    container.innerHTML = `<div class="empty-orders"><span>🚗</span>${t('driverHint')}</div>`;
+    return;
+  }
+
+  const orders = loadOrders();
+  const normInput = normalizePhone(input);
+
+  // ابحث عن الطلبات المطابقة لرقم السائق
+  const myOrders = orders.filter(o => {
+    const normDriver = normalizePhone(o.driver || '');
+    return normDriver === normInput || normDriver.endsWith(normInput) || normInput.endsWith(normDriver);
+  });
+
+  if (!myOrders.length) {
+    container.innerHTML = `<div class="empty-orders"><span>📭</span>${t('driverNoOrders')}</div>`;
+    return;
+  }
+
+  // لكل طلب، ابحث عن المروّج
+  const enriched = myOrders.map(o => {
+    // إذا كان السوق مُعاد توزيعه، المروّج هو الشخص المحوَّل إليه
+    const promoterName = o.reassignedTo ||
+      (promoters.find(p => normalize(p.market) === normalize(o.market)) || {}).name || '—';
+    const promoterData = promoters.find(p => p.name === promoterName);
+    return { order: o, promoterName, promoterPhone: promoterData?.phone || null };
+  });
+
+  container.innerHTML = `
+    <div class="driver-summary-bar">
+      <span class="driver-summary-text">📦 ${t('driverTotalOrders')}</span>
+      <span class="driver-summary-count">${myOrders.length} ${t('driverOrderCount')}</span>
+    </div>
+    ${enriched.map((e, i) => {
+      const pWa = e.promoterPhone ? e.promoterPhone.replace(/\D/g,'').replace(/^0/,'966') : null;
+      const isReassigned = !!e.order.reassignedTo;
+      return `
+      <div class="driver-order-card">
+        <div class="driver-order-num">${i+1}</div>
+        <div class="driver-market-name">🏪 ${e.order.market}
+          ${isReassigned ? `<span style="background:#fef3c7;color:#92400e;font-size:.68rem;border-radius:5px;padding:1px 6px;margin-right:6px">${t('reassigned')}</span>` : ''}
+        </div>
+        <div class="driver-promoter-row">
+          <span class="tag" style="background:#fef3c7;color:#92400e">👤 ${t('sectionPromoter')}</span>
+          <span style="font-size:.9rem;font-weight:600;color:#2d1b6e">${e.promoterName}</span>
+          ${e.promoterPhone
+            ? `<span class="phone" style="font-size:.85rem">${e.promoterPhone}</span>
+               <a class="wa-btn" href="https://wa.me/${pWa}" target="_blank">${t('waBtn')}</a>`
+            : `<span style="color:#ccc;font-size:.8rem">${t('noPhone')}</span>`
+          }
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+// تأكد من تحميل الأرشيف عند بدء الصفحة (يحفظ اليوم السابق إن وُجد)
+loadOrders();
+
+// تهيئة
+initOrders();
+initAbsence();
+</script>
+</body>
+</html>
