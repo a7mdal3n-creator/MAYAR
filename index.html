@@ -1366,7 +1366,8 @@ function search() {
     container.innerHTML = `<div class="hint"><span>🔍</span>${t('hintText')}</div>`;
     return;
   }
-  const matches = promoters.filter(d => d.market.toLowerCase().includes(q));
+  const allPromoters = (typeof getMPromoters === 'function') ? getMPromoters() : promoters;
+  const matches = allPromoters.filter(d => d.market.toLowerCase().includes(q));
   if (!matches.length) {
     container.innerHTML = `<div class="no-result"><span>😕</span>${t('noResult')}: "<strong>${document.getElementById('searchInput').value}</strong>"</div>`;
     return;
@@ -1375,13 +1376,15 @@ function search() {
   container.innerHTML = `<div class="count-bar">${matches.length} نتيجة</div>` + matches.map(d => {
     const rep = findRep(d.market);
     const order = todayOrders.find(o => normalize(o.market) === normalize(d.market));
-    const dWa = order ? order.driver.replace(/\D/g,'').replace(/^0/,'966') : '';
+    const dWa = order ? (order.driverPhone||order.driver||'').replace(/\D/g,'').replace(/^0/,'966') : '';
     return `<div class="card">
       <div class="market-name">🏪 ${d.market}${order ? ' <span style="background:#e6f9ee;color:#166534;font-size:.72rem;border-radius:6px;padding:2px 8px;font-weight:bold">📦 طلب اليوم</span>' : ''}</div>
       ${order ? `<div style="background:#f0fdf4;border-radius:10px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <span style="font-size:.8rem;font-weight:bold;color:#166534">🚗 السائق:</span>
-        <span class="phone">${order.driver}</span>
-        <a class="wa-btn" href="https://wa.me/${dWa}" target="_blank">💬 واتساب</a>
+        ${(order.driverPhone||order.driver) ? `
+          <button onclick="copyPhone('${order.driverPhone||order.driver}',this)" class="copy-btn" style="font-size:.78rem;padding:3px 8px">📋 ${order.driverPhone||order.driver}</button>
+          <a class="wa-btn" href="https://wa.me/${dWa}" target="_blank">💬 واتساب</a>
+        ` : ''}
       </div>` : ''}
       <div class="section">
         <div class="section-title" data-i18n="sectionPromoter">👤 المروّج</div>
@@ -1655,7 +1658,7 @@ function formatDateAr(dateStr) {
 }
 
 // قائمة المنشطين (للبحث)
-const allPromoterNames = [...new Set(promoters.map(p => p.name))].sort();
+const allPromoterNames = [...new Set(getMPromoters().map(p => p.name))].sort();
 let selectedPromoter = '';
 
 // --- تهيئة قوائم الأسواق ---
@@ -1730,7 +1733,7 @@ function archiveDay(date, orders) {
   if (!archive.find(d => d.date === date)) {
     // أضف اسم المروّج لكل طلب
     const enriched = orders.map(o => {
-      const pr = promoters.find(p => p.market === o.market);
+      const pr = getMPromoters().find(p => p.market === o.market);
       return { ...o, promoter: pr ? pr.name : '—' };
     });
     archive.unshift({ date, orders: enriched });
@@ -2073,7 +2076,7 @@ function findBestReplacement(market, absentName, todayOrders, absentList) {
   const regionsToTry = [absentRegion, ...(regionProximity[absentRegion]||[])];
   const todayCount = {}; // عدد الطلبات لكل مروّج اليوم
   todayOrders.forEach(o => {
-    const pr = promoters.find(p => p.market === o.market);
+    const pr = getMPromoters().find(p => p.market === o.market);
     if (pr) todayCount[pr.name] = (todayCount[pr.name]||0) + 1;
   });
 
@@ -2086,7 +2089,7 @@ function findBestReplacement(market, absentName, todayOrders, absentList) {
 
     // أسواق كل مروّج
     const scored = candidates.map(name => {
-      const theirMarkets = promoters.filter(p => p.name === name).map(p => p.market);
+      const theirMarkets = getMPromoters().filter(p => p.name === name).map(p => p.market);
       const overlap = Math.max(...theirMarkets.map(m => keywordOverlap(market, m)), 0);
       const load = todayCount[name] || 0;
       return { name, score: overlap * 10 - load, region };
@@ -2382,13 +2385,13 @@ function runAIDistribution() {
       cell.split(/[\/\\]/).forEach(function(num){
         num=num.trim(); if(!num||num==='NaN') return;
         var found=null;
-        promoters.forEach(function(p){
+        getMPromoters().forEach(function(p){
           if(found) return;
           var m=p.market.toLowerCase();
           if(m.indexOf(num.toLowerCase())>=0&&(!sn||m.indexOf(sn.toLowerCase())>=0)) found=p;
         });
         if(!found&&!isNaN(num)){
-          promoters.forEach(function(p){
+          getMPromoters().forEach(function(p){
             if(found) return;
             if((p.market.match(/\d+/g)||[]).indexOf(num)>=0) found=p;
           });
