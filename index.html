@@ -433,7 +433,7 @@
   .eye-btn { position:absolute;left:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#8B5CF6;font-size:1.1rem;padding:4px; }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -1627,12 +1627,11 @@ let ordersRef = null;
 function initFirebase() {
   try {
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    ordersRef = db.collection("orders").doc("today");
+    db = firebase.database();
+    ordersRef = db.ref("orders/today");
     // مراقبة التغييرات الفورية
-    ordersRef.onSnapshot((snap) => {
-      if (!snap.exists) return;
-      const data = snap.data();
+    ordersRef.on("value", (snap) => {
+      const data = snap.val();
       if (data && data.date === TODAY && data.orders) {
         localStorage.setItem(ORDERS_KEY, JSON.stringify({ date: TODAY, orders: data.orders }));
         updateCount(data.orders);
@@ -1746,7 +1745,10 @@ function loadArchive() {
 
 function saveOrders(orders) {
   localStorage.setItem(ORDERS_KEY, JSON.stringify({ date: TODAY, orders }));
-  syncToFirebase(orders); // رفع فوري لـ Firebase
+  // رفع فوري لـ Realtime Database
+  if (typeof ordersRef !== 'undefined' && ordersRef) {
+    ordersRef.set({ date: TODAY, orders: orders }).catch(function(e){ console.warn('Firebase save error:', e); });
+  }
 }
 
 // --- تحديث العداد ---
