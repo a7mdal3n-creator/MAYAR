@@ -1801,7 +1801,10 @@ function refreshOrdersUI() {
   container.innerHTML = orders.map(o => `
     <div class="order-item">
       <span class="order-market">${o.market}</span>
-      <span class="order-driver">${o.driver}</span>
+      ${(o.driverPhone||o.driver) ? `
+          <button onclick="copyPhone('${o.driverPhone||o.driver}',this)" style="background:#4C2D9E;color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:.78rem;cursor:pointer">📋 ${o.driverPhone||o.driver}</button>
+          <a href="https://wa.me/966${(o.driverPhone||o.driver||'').replace(/^0/,'').replace(/\D/g,'')}" target="_blank" style="background:#25d366;color:#fff;border-radius:8px;padding:4px 10px;font-size:.78rem;text-decoration:none">💬</a>
+        ` : ''}
       <button class="btn-danger" onclick="deleteOrder('${o.market.replace(/'/g,"\\'")}')">✕</button>
     </div>
   `).join('');
@@ -1816,7 +1819,7 @@ function showPromoterOrders() {
     return;
   }
   const orders = loadOrders();
-  const myMarkets = promoters.filter(p => p.name === name).map(p => p.market);
+  const myMarkets = getMPromoters().filter(p => p.name === name).map(p => p.market);
   // أسواقه الأصلية + الأسواق المُعاد توزيعها عليه
   const myOrders = orders.filter(o =>
     myMarkets.some(m => normalize(m) === normalize(o.market)) ||
@@ -1830,7 +1833,7 @@ function showPromoterOrders() {
 
   container.innerHTML = `<p style="font-size:.8rem;color:#8B5CF6;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px"><span style="width:4px;height:16px;background:#C9A327;border-radius:2px;display:inline-block"></span>${myOrders.length} طلب اليوم</p>` +
   myOrders.map(o => {
-    const dClean = o.driver.replace(/\D/g, '');
+    const dClean = (o.driverPhone||o.driver||'').replace(/\D/g, '');
     const dWa = dClean.startsWith('0') ? '966' + dClean.slice(1) : dClean;
     const isReassigned = o.reassignedTo === name;
     return `
@@ -1840,8 +1843,10 @@ function showPromoterOrders() {
       </div>
       <div class="driver-row">
         <span class="driver-tag">${t('sectionDriver')}</span>
-        <span class="phone">${o.driver}</span>
-        <a class="wa-btn" href="https://wa.me/${dWa}" target="_blank">${t('waBtn')}</a>
+        ${(o.driverPhone||o.driver) ? `
+          <button onclick="copyPhone('${o.driverPhone||o.driver}',this)" class="copy-btn" style="font-size:.78rem;padding:3px 8px">📋 ${o.driverPhone||o.driver}</button>
+          <a class="wa-btn" href="https://wa.me/${dWa}" target="_blank">${t('waBtn')}</a>
+        ` : ''}
       </div>
     </div>`;
   }).join('');
@@ -2196,8 +2201,8 @@ function showDriverOrders() {
 
   // ابحث عن الطلبات المطابقة لرقم السائق
   const myOrders = orders.filter(o => {
-    const normDriver = normalizePhone(o.driver || '');
-    return normDriver === normInput || normDriver.endsWith(normInput) || normInput.endsWith(normDriver);
+    const normPhone = normalizePhone(o.driverPhone || o.driver || '');
+    return normPhone === normInput || normPhone.endsWith(normInput) || normInput.endsWith(normPhone);
   });
 
   if (!myOrders.length) {
@@ -2327,11 +2332,16 @@ function initAbsence() {
   var sel=document.getElementById('absentPromoterSelect');
   if (!sel) return;
   sel.innerHTML='<option value="">-- اختر المروّج الغائب --</option>';
+  var data = (typeof getMPromoters === 'function') ? getMPromoters() : promoters;
   var names=[];
-  promoters.forEach(function(p){ if(names.indexOf(p.name)<0) names.push(p.name); });
+  data.forEach(function(p){ if(names.indexOf(p.name)<0) names.push(p.name); });
   names.sort().forEach(function(n){
     var o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o);
   });
+}
+
+function refreshAbsence() {
+  initAbsence();
 }
 
 // ===== التوزيع من جدول السواقين =====
@@ -2522,7 +2532,7 @@ function renderManagePromoters(){
       var mkt=inp.value.trim(); if(!mkt) return;
       var ph=data.find(function(p){ return p.name===name; });
       data.push({market:mkt,name:name,phone:ph?ph.phone:null,source:'Mayar'});
-      saveMPromoters(data); renderManagePromoters(); showMMsg('mp_msg','✅ تم','green');
+      saveMPromoters(data); renderManagePromoters(); refreshAbsence(); showMMsg('mp_msg','✅ تم','green');
     } else if(a==='ep'){
       var ph=prompt('رقم جوال '+name+':'); if(ph===null) return;
       data.forEach(function(p){ if(p.name===name) p.phone=ph; }); saveMPromoters(data); renderManagePromoters();
@@ -2531,7 +2541,7 @@ function renderManagePromoters(){
       data.forEach(function(p){ if(p.name===name) p.name=nn.trim(); }); saveMPromoters(data); renderManagePromoters();
     } else if(a==='dp'){
       if(!confirm('حذف '+name+'؟')) return;
-      saveMPromoters(data.filter(function(p){ return p.name!==name; })); renderManagePromoters(); showMMsg('mp_msg','✅ تم','green');
+      saveMPromoters(data.filter(function(p){ return p.name!==name; })); renderManagePromoters(); refreshAbsence(); showMMsg('mp_msg','✅ تم','green');
     }
   };
 }
@@ -2558,7 +2568,17 @@ function renderManageReps(){
     html+='<button data-ra="en" data-n="'+ni+'" style="padding:5px 10px;background:#dcfce7;color:#166534;border:1px solid #86efac;border-radius:8px;font-size:.75rem;cursor:pointer">✏️ اسم</button>';
     html+='<button data-ra="ep" data-n="'+ni+'" style="padding:5px 10px;background:#f0fdf4;color:#166534;border:1px solid #86efac;border-radius:8px;font-size:.75rem;cursor:pointer">📞 رقم</button>';
     html+='<button data-ra="dp" data-n="'+ni+'" style="padding:5px 10px;background:#fff0f0;color:#c00;border:1px solid #fca5a5;border-radius:8px;font-size:.75rem;cursor:pointer">🗑</button>';
-    html+='</div></div></div>';
+    html+='</div></div>';
+    html+='<details style="margin-top:10px"><summary style="font-size:.78rem;color:#22A045;cursor:pointer;font-weight:600">🏪 الأسواق ('+entries.length+')</summary><div style="margin-top:8px">';
+    for(var ei=0;ei<entries.length;ei++){
+      html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;background:#f0fdf4;border-radius:8px;padding:6px 10px">';
+      html+='<span style="font-size:.75rem;color:#555;flex:1;direction:ltr">'+(ei+1)+'. '+entries[ei].market+'</span>';
+      html+='<button data-ra="em" data-n="'+ni+'" data-e="'+ei+'" style="padding:3px 8px;background:#dcfce7;color:#166534;border:none;border-radius:6px;font-size:.72rem;cursor:pointer">✏️</button>';
+      html+='<button data-ra="dm" data-n="'+ni+'" data-e="'+ei+'" style="padding:3px 8px;background:#ffe4e4;color:#c00;border:none;border-radius:6px;font-size:.72rem;cursor:pointer">🗑</button>';
+      html+='</div>';
+    }
+    html+='<div style="display:flex;gap:6px;margin-top:8px"><input type="text" id="rm_'+ni+'" placeholder="أضف سوق..." dir="ltr" style="flex:1;padding:7px 10px;border:2px solid #bbf7d0;border-radius:8px;font-size:.8rem;outline:none"><button data-ra="am" data-n="'+ni+'" style="padding:7px 12px;background:#22A045;color:#fff;border:none;border-radius:8px;font-size:.8rem;cursor:pointer;font-weight:600">➕</button></div>';
+    html+='</div></details></div>';
   }
   container.innerHTML=html;
   container.onclick=function(e){
@@ -2570,6 +2590,23 @@ function renderManageReps(){
     if(a==='ep'){ var ph=prompt('رقم جوال '+name+':'); if(ph===null) return; data.forEach(function(r){ if(r.name===name) r.phone=ph; }); saveMReps(data); renderManageReps(); }
     else if(a==='en'){ var nn=prompt('اسم المندوب:',name); if(!nn||nn===name) return; data.forEach(function(r){ if(r.name===name) r.name=nn.trim(); }); saveMReps(data); renderManageReps(); }
     else if(a==='dp'){ if(!confirm('حذف '+name+'؟')) return; saveMReps(data.filter(function(r){ return r.name!==name; })); renderManageReps(); showMMsg('mr_msg','✅ تم','green'); }
+    else if(a==='dm'){
+      var mkt=entries[ei]?entries[ei].market:null; if(!mkt) return;
+      if(!confirm('حذف: '+mkt)) return;
+      saveMReps(data.filter(function(r){ return !(r.name===name&&r.market===mkt); }));
+      renderManageReps(); showMMsg('mr_msg','✅ تم حذف السوق','green');
+    } else if(a==='em'){
+      var mkt=entries[ei]?entries[ei].market:null; if(!mkt) return;
+      var nm=prompt('تعديل السوق:',mkt); if(!nm||nm===mkt) return;
+      var en=data.find(function(r){ return r.name===name&&r.market===mkt; });
+      if(en) en.market=nm.trim(); saveMReps(data); renderManageReps();
+    } else if(a==='am'){
+      var inp=document.getElementById('rm_'+ni); if(!inp) return;
+      var mkt=inp.value.trim(); if(!mkt) return;
+      var ph=data.find(function(r){ return r.name===name; });
+      data.push({market:mkt,name:name,phone:ph?ph.phone:'',route:''});
+      saveMReps(data); renderManageReps(); showMMsg('mr_msg','✅ تم إضافة السوق','green');
+    }
   };
 }
 
