@@ -2291,13 +2291,28 @@ function showRepOrders() {
 // ============================================================
 let _aiOrders = [];
 
+// كل سلسلة: كلمة إنجليزية تُستخدم فعلياً للمطابقة مع أسماء الأسواق (اللي دايماً
+// بالإنجليزي بقائمة promoters)، + كلمات عربية تُستخدم فقط لاكتشاف صف العناوين
+// وللعرض. GT = تجارة عامة (محلات مستقلة) وما لها كلمة ثابتة، فلا تُستخدم كقيد.
+const AI_CHAINS = [
+  { key: 'othaim', en: 'othaim', ar: ['عثيم'], label: 'العثيم' },
+  { key: 'panda', en: 'panda', ar: ['بند'], label: 'بنده' },
+  { key: 'danube', en: 'danube', ar: ['دانوب', 'دانب'], label: 'الدانوب' },
+  { key: 'tamimi', en: 'tamimi', ar: ['تميم'], label: 'تميمي' },
+  { key: 'lulu', en: 'lulu', ar: ['لولو'], label: 'لولو' },
+  { key: 'carrefour', en: 'carrefour', ar: ['كارفور'], label: 'كارفور' },
+  { key: 'bindawood', en: 'dawood', ar: ['بن داوود', 'داوود'], label: 'بن داوود' },
+  { key: 'gt', en: null, ar: ['gt', 'جي تي'], label: 'GT' }
+];
+// الترتيب الافتراضي لو ما قدرنا نكتشف صف عناوين بالبيانات الملصوقة
+const AI_DEFAULT_ORDER = ['othaim', 'panda', 'danube', 'tamimi', 'lulu', 'carrefour', 'bindawood', 'gt'];
+
 function runAIDistribution() {
   const input = (document.getElementById('aiDistInput') || {}).value;
   const result = document.getElementById('aiDistResult');
   if (!input || !result || !input.trim()) { if (result) result.innerHTML = '<p style="color:#c00">❌ الصق البيانات أولاً</p>'; return; }
   result.innerHTML = '<div style="text-align:center;padding:16px;color:#8B5CF6">⚡ جاري التوزيع...</div>';
 
-  const storeNames = { 1: 'العثيم', 2: 'بنده', 3: 'الدانوب', 4: 'تميمي', 5: 'لولو', 6: 'كارفور', 7: 'بن داوود', 8: 'GT' };
   const arToEn = { 'غرناطة': 'granada', 'خريص': 'khurais', 'سدرة': 'sidra', 'مترو طويق': 'tuwaiq', 'مترو لبن': 'laban', 'زهرة المدهش': 'madhesh', 'ياسمين': 'yasmeen', 'الياسمين': 'yasmeen' };
 
   function trAr(txt) {
@@ -2306,24 +2321,58 @@ function runAIDistribution() {
     return null;
   }
 
+  function matchChain(cellText) {
+    const l = cellText.toLowerCase().trim();
+    for (const c of AI_CHAINS) {
+      if (c.ar.some(a => l.indexOf(a.toLowerCase()) >= 0)) return c.key;
+      if (c.en && l.indexOf(c.en) >= 0) return c.key;
+    }
+    return null;
+  }
+
   const mp = getMPromoters();
   const orders = [];
   const unmatched = [];
 
-  input.trim().split('\n').forEach(line => {
-    const cells = line.trim().split('\t');
-    if (cells.length < 2) return;
+  const lines = input.trim().split('\n').filter(l => l.trim());
+  if (!lines.length) { result.innerHTML = '<p style="color:#c00">❌ ما قدرنا نقرأ البيانات</p>'; return; }
+
+  // اكتشاف صف العناوين: أول سطر ما فيه رقم جوال بأول خانة، وأغلب خاناته تطابق
+  // اسم سلسلة معروف — نبني منه ترتيب الأعمدة الفعلي بدل الترتيب الثابت
+  let columnChain = {};
+  let startLine = 0;
+  const firstCells = lines[0].trim().split('\t');
+  const firstHasPhone = /0\d{9}/.test(firstCells[0] || '');
+  if (!firstHasPhone) {
+    let hits = 0;
+    for (let ci = 1; ci < firstCells.length; ci++) {
+      const chain = matchChain(firstCells[ci]);
+      if (chain) { columnChain[ci] = chain; hits++; }
+    }
+    if (hits >= 2) startLine = 1; // اعتبرناه فعلاً صف عناوين، تخطّاه من بيانات الأسواق
+    else columnChain = {};
+  }
+  if (!Object.keys(columnChain).length) {
+    AI_DEFAULT_ORDER.forEach((chain, i) => { columnChain[i + 1] = chain; });
+  }
+
+  for (let li = startLine; li < lines.length; li++) {
+    const cells = lines[li].trim().split('\t');
+    if (cells.length < 2) continue;
     const col0 = cells[0].trim();
     const pm = col0.match(/0\d{9}/);
     let driverPhone = pm ? pm[0] : '';
     const driverName = col0.replace(/0\d{9}/, '').trim();
     if (!driverPhone && driverName) driverPhone = getDriverPhone(driverName) || '';
-    if (!driverName && !driverPhone) return;
+    if (!driverName && !driverPhone) continue;
 
     for (let ci = 1; ci < cells.length; ci++) {
       const cell = cells[ci].trim();
       if (!cell || cell === 'NaN' || cell === '-') continue;
-      const sn = storeNames[ci] || '';
+      const chainKey = columnChain[ci] || null;
+      const chainInfo = AI_CHAINS.find(c => c.key === chainKey);
+      const keyword = chainInfo ? chainInfo.en : null; // null لـ GT: بدون قيد سلسلة
+      const label = chainInfo ? chainInfo.label : '';
       cell.split(/[\/\\]/).forEach(rawNum => {
         const num = rawNum.trim();
         if (!num || num === 'NaN') return;
@@ -2331,23 +2380,33 @@ function runAIDistribution() {
         mp.forEach(p => {
           if (found) return;
           const m = p.market.toLowerCase();
-          if (m.indexOf(num.toLowerCase()) >= 0 && (!sn || m.indexOf(sn.toLowerCase()) >= 0)) found = p;
+          if (m.indexOf(num.toLowerCase()) >= 0 && (!keyword || m.indexOf(keyword) >= 0)) found = p;
         });
         if (!found && !isNaN(num)) {
           mp.forEach(p => {
             if (found) return;
-            if ((p.market.match(/\d+/g) || []).indexOf(num) >= 0) found = p;
+            const m = p.market.toLowerCase();
+            if (!keyword || m.indexOf(keyword) >= 0) {
+              if ((p.market.match(/\d+/g) || []).indexOf(num) >= 0) found = p;
+            }
           });
+          // لو ما لقينا بنفس السلسلة، جرّب بأي سلسلة كحل أخير (أفضل من ولا شي)
+          if (!found) {
+            mp.forEach(p => {
+              if (found) return;
+              if ((p.market.match(/\d+/g) || []).indexOf(num) >= 0) found = p;
+            });
+          }
         }
         if (!found && isNaN(num)) {
           const tr = trAr(num);
           if (tr) mp.forEach(p => { if (!found && p.market.toLowerCase().indexOf(tr) >= 0) found = p; });
         }
         if (found) orders.push({ market: found.market, driverPhone, promoter: found.name });
-        else unmatched.push((sn ? sn + ' ' : '') + num + ' (' + driverName + ')');
+        else unmatched.push((label ? label + ' ' : '') + num + ' (' + driverName + ')');
       });
     }
-  });
+  }
 
   _aiOrders = orders;
   let html = '';
