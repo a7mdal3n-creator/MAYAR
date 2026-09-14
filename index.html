@@ -1756,7 +1756,7 @@ function clearAllOrders() {
   if (!confirm('مسح جميع الطلبيات؟ ستُحفظ في الأرشيف تلقائياً')) return;
   const orders = loadOrders();
   if (orders.length > 0) archiveDay(TODAY, orders);
-  localStorage.removeItem(ORDERS_KEY);
+  saveOrders([]);
   refreshOrdersUI();
   showPromoterOrders();
 }
